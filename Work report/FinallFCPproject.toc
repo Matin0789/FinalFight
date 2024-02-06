@@ -1,0 +1,11 @@
+\contentsline {part}{I\hspace {1em}Introducing the game}{3}{part.1}%
+\contentsline {section}{\numberline {1}How to Play}{3}{section.1}%
+\contentsline {section}{\numberline {2}Errors and Warnings}{3}{section.2}%
+\contentsline {part}{II\hspace {1em}Code description}{4}{part.2}%
+\contentsline {section}{\numberline {1}libraries}{4}{section.1}%
+\contentsline {section}{\numberline {2}Defines}{4}{section.2}%
+\contentsline {section}{\numberline {3}Structures}{4}{section.3}%
+\contentsline {section}{\numberline {4}Functions}{4}{section.4}%
+\contentsline {part}{III\hspace {1em}links and references}{5}{part.3}%
+\contentsline {section}{\numberline {1}Links}{5}{section.1}%
+\contentsline {section}{\numberline {2}References}{5}{section.2}%
