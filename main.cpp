@@ -1,13 +1,18 @@
-// Matin amirpanah ------->40212358003
-// Nima makhmali  -------->40212358035
-// This project creat for FOP finall project
+/* 
+This project creat for FOP finall project winter1402
+authors:
+    Matin amirpanah, Student No:40212358003
+    Nima makhmali, Student No:40212358035
+*/
 
-//libraries
-#include <iostream>
-#include <stdlib.h>
-#include <ctime>
 
-//defines
+/// libraries
+#include <iostream> // Interaction with terminal 
+#include <stdlib.h> // Interaction with the operating system
+#include <ctime> // Get system clock for Primary seed of rand
+#include <fstream> // Interaction with file
+
+/// defines
 #define Reset   "\033[0m"
 #define Black   "\033[30m"
 #define Red     "\033[31m"
@@ -41,119 +46,111 @@
 
 using namespace std;
 
-// structs
+///enums
+enum Condition
+{
+    Null,
+    Enemy,
+    SpaceShip
+};
+
+
+
+/// structs
 struct enemyStruct
 {
-    char c = '*';
-    size_t size;
-    size_t heal; 
+    char name[8];// enemy name
+    char c = '*';// enemy default character
+    size_t size;// enemy size in map
+    size_t heal; // enemy's health
 };
 
 struct spaceShipStruct
 {
-    char c = '*';
-    char shot = '\'';
-    size_t heal;
+    char c = '*';// space ship default charater
+    char shot = '\'';// shot default character
+    size_t heal; // space ship's health
 };
 
-// function declaration
+/// function declaration
+// Preliminary function
+void gameRun(size_t mapSize,spaceShipStruct spaceShip,);
+void save(size_t mapSize, int *map, enemyStruct enemy, spaceShipStruct spaceShip);
 
 // menu functions
+void menu();
 
 // drawing grand functions
 void horizontalDraw();
-void GrandDraw();
+void grandDraw();
 
 // move functions
-void MoveHash();
+void move();
 
-// main function
+/// main function
 int main() 
 {
+    srand(time(NULL));
+    do
+    {
+        size_t mapSize = 15;
+        spaceShipStruct spaceShip;
+        enemyStruct enemy;
+        enemyStruct typesOfEnemys[4] =
+        {
+            {"Dart" , '*' , 1 , 1},
+            {"Striker" ,'*' , 2 ,2},
+            {"Wraith", '*' , 3 , 4},
+            {"Banshee", '*' , 4 , 6},
+        };
+
+        gameRun();
+        Condition map[mapSize][mapSize];
+
+        while(spaceShip.heal > 0)
+        {
+            grandDraw();
+            move();
+        }
+
+    } while (/* condition */);
     
-    size_t mapSize = 15;
-
-
-    int condition[mapSize][mapSize];
-    spaceShipStruct spaceShip;
-    enemyStruct enemy;
-    enemyStruct Dart{ '*' , 1 , 1};
-    enemyStruct Striker{ '*' , 2 ,2};
-    enemyStruct Wraith{ '*' , 3 , 4};
-    enemyStruct Banshee{ '*' , 4 , 6};
     
-
-
-    MoveHash();
+    
+    
     return 0;
 }
 
-// function definition
+/// function definition
+void gameRun()
+{
+
+}
+
+void save()
+{
+
+}
+
+void menu()
+{
+
+}
+
+
+
 void horizontalDraw()
 {
 
 }
 
-void GrandDraw()
+void grandDraw()
 {
-    srand(time(NULL));
+    
 
-    cout << " --------------------" << endl;
-
-    int count = 0; // تعداد "*" های تصادفی
-    bool chosen[5] = { false }; // وضعیت انتخاب هر خانه
-
-    while (count < 4) {
-        int randomIndex = rand() % 5;
-        if (!chosen[randomIndex]) {
-            chosen[randomIndex] = true;
-            count++;
-        }
-    }
-
-    for (int i = 0; i < 4; i++)
-    {
-        cout << "|";
-
-        for (int j = 0; j < 5; j++)
-        {
-            if (i == 0 && j < 4)
-            {
-                if (chosen[j]) {
-                    cout << " * ";
-                }
-                else {
-                    cout << "   ";
-                }
-            }
-            else {
-                cout << "   ";
-            }
-
-            cout << "|";
-        }
-
-        cout << endl;
-        cout << " --------------------" << endl;
-    }
-
-    cout << "|";
-    int position = rand() % 5;
-    for (int j = 0; j < 5; j++)
-    {
-        if (j == position)
-            cout << " # ";
-        else
-            cout << "   ";
-
-        cout << "|";
-    }
-
-    cout << endl;
-    cout << " --------------------" << endl;
 }
 
-void MoveHash()
+void move()
 {
     int position = 2; 
     int direction = 1; 
