@@ -61,91 +61,138 @@ struct enemyStruct
 {
     char name[8];// enemy name
     char c = '*';// enemy default character
-    unsigned int size;// enemy size in map
-    unsigned int heal; // enemy's health
+    size_t size;// enemy size in map
+    size_t heal; // enemy's health
 };
 
 struct spaceShipStruct
 {
     char c = '*';// space ship default charater
     char shot = '\'';// shot default character
-    unsigned int heal; // space ship's health
-};
-
-struct grandStruct
-{
-    unsigned int size;
-    enemyStruct enemy;
-    spaceShipStruct spaceShip;
-    Condition **map = new Condition* [size];
-    Condition *map = new Condition [size];
-    
+    size_t heal; // space ship's health
 };
 
 /// function declaration
 // Preliminary function
-bool save(grandStruct grand);
-bool load(grandStruct &grand);
+void save(Condition map[]);
 
 // menu functions
-void pauseMenu();
-void startMenu();
+void menu();
 
 // drawing grand functions
-void horizontalLineDraw(unsigned int mapSize);
-void grandDraw(grandStruct grand);
+void horizontalLineDraw(size_t mapSize);
+void grandDraw(size_t mapSize, Condition map[], spaceShipStruct spaceShip, enemyStruct enemy);
 
 // move functions
 void move();
 
 /// main function
-int main() 
+int main()
 {
     srand(time(NULL));
 
-    unsigned int mapSize = 15;
-    grandStruct grand;
+    size_t mapSize = 15;
+    spaceShipStruct spaceShip;
+    enemyStruct enemy;
     enemyStruct typesOfEnemys[4] =
-    {
-        {"Dart" , '*' , 1 , 1},
-        {"Striker" ,'*' , 2 ,2},
-        {"Wraith", '*' , 3 , 4},
-        {"Banshee", '*' , 4 , 6},
-    };
+            {
+                    {"Dart", '*', 1, 1},
+                    {"Striker", '*', 2, 2},
+                    {"Wraith", '*', 3, 4},
+                    {"Banshee", '*', 4, 6},
+            };
 
-    menu();
+    while (true) 
+	{
+        menu();
 
-    for (size_t i = 0; i < grand.size; i++)
-    {
-        for (size_t j = 0; j < mapSize; j++)
-        {
-            grand.map[i][j] = Null;
+        Condition map[mapSize][mapSize];
+        for (size_t i = 0; i < mapSize; i++) 
+		{
+            for (size_t j = 0; j < mapSize; j++) 
+			{
+                map[i][j] = Null;
+            }
         }
+
+        grandDraw(mapSize, (Condition *) map, spaceShip, enemy);
+        cout << "Press 'm' to go back to the menu or any other key to exit: ";
+        char input;
+        cin >> input;
+        if (input != 'm') 
+		{
+            break;
+        }
+        else
+        {
+        	system("cls");
+             menu();
+		}
+        
     }
 
-    grandDraw(grand);
-    system("pause");
+    cout << "Exiting the program..." << endl;
     return 0;
 }
 
 /// function definition
-bool save(grandStruct grand)
+void save(Condition map[])
 {
-    fstream saveFile("SaveFile.bin", ios::binary | ios::trunc);
-    if(saveFile.write((char *) &grand , sizeof(grand)))
-        return true;
-    else
-        return false;
+
 }
 
 void menu()
 {
+    int choice;
+    bool gameStarted = false;
 
+    while (true) {
+        cout << "======== Menu ========" << endl;
+        cout << "1. Start Game" << endl;
+        cout << "2. Pause Game" << endl;
+        cout << "3. Quit Game" << endl;
+        cout << "=======================" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                if (!gameStarted) 
+				{
+                    // start
+                    cout << "Game started!" << endl;
+                    gameStarted = true;
+                    return;
+                } 
+				else { cout << "Game is already started!" << endl;}
+            
+                break;
+
+            case 2:
+                if (gameStarted) {
+                    // stop
+                    cout << "Game paused!" << endl;
+                    gameStarted = false;
+                } else {
+                    cout << "No game is currently running!" << endl;
+                }
+                break;
+
+            case 3:
+                // Exit
+                cout << "Game exited!" << endl;
+                return;
+
+            default:
+                cout << "Invalid choice! Please try again." << endl;
+                break;
+        }
+
+        cout << endl;
+    }
 }
 
-
-
-void horizontalLineDraw(unsigned int mapSize)
+void horizontalLineDraw(size_t mapSize)
 {
     for (size_t i = 0; i < mapSize; i++)
     {
@@ -157,21 +204,21 @@ void horizontalLineDraw(unsigned int mapSize)
     cout << endl;
 }
 
-void grandDraw(grandStruct grand)
+void grandDraw(size_t mapSize, Condition map[], spaceShipStruct spaceShip, enemyStruct enemy)
 {
-    for (size_t i = 0; i < grand.size; i++)
+    for (size_t i = 0; i < mapSize; i++)
     {
-        horizontalLineDraw(grand.size);
-        for (size_t j = 0; j < grand.size; j++)
+        horizontalLineDraw(mapSize);
+        for (size_t j = 0; j < mapSize; j++)
         {
             cout << '|';
-            switch (grand.map[i][j])
+            switch (*((map+i*mapSize) + j))
             {
             case Enemy:
-                cout << ' ' << grand.enemy.c << ' ';
+                cout << ' ' << enemy.c << ' ';
                 break;
             case SpaceShip:
-                cout << ' ' << grand.spaceShip.c << ' ';
+                cout << ' ' << spaceShip.c << ' ';
                 break;
             default:
                 cout << "   ";
@@ -181,8 +228,7 @@ void grandDraw(grandStruct grand)
         cout << '|';
         cout << endl;
     }
-    horizontalLineDraw(grand.size);
-    save(grand);
+    horizontalLineDraw(mapSize);
 }
 
 void move()
