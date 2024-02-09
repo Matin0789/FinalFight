@@ -61,27 +61,39 @@ struct enemyStruct
 {
     char name[8];// enemy name
     char c = '*';// enemy default character
-    size_t size;// enemy size in map
-    size_t heal; // enemy's health
+    unsigned int size;// enemy size in map
+    unsigned int heal; // enemy's health
 };
 
 struct spaceShipStruct
 {
     char c = '*';// space ship default charater
     char shot = '\'';// shot default character
-    size_t heal; // space ship's health
+    unsigned int heal; // space ship's health
+};
+
+struct grandStruct
+{
+    unsigned int size;
+    enemyStruct enemy;
+    spaceShipStruct spaceShip;
+    Condition **map = new Condition* [size];
+    Condition *map = new Condition [size];
+    
 };
 
 /// function declaration
 // Preliminary function
-void save(Condition map[]);
+bool save(grandStruct grand);
+bool load(grandStruct &grand);
 
 // menu functions
-void menu();
+void pauseMenu();
+void startMenu();
 
 // drawing grand functions
-void horizontalLineDraw(size_t mapSize);
-void grandDraw(size_t mapSize, Condition map[], spaceShipStruct spaceShip, enemyStruct enemy);
+void horizontalLineDraw(unsigned int mapSize);
+void grandDraw(grandStruct grand);
 
 // move functions
 void move();
@@ -91,9 +103,8 @@ int main()
 {
     srand(time(NULL));
 
-    size_t mapSize = 15;
-    spaceShipStruct spaceShip;
-    enemyStruct enemy;
+    unsigned int mapSize = 15;
+    grandStruct grand;
     enemyStruct typesOfEnemys[4] =
     {
         {"Dart" , '*' , 1 , 1},
@@ -104,24 +115,27 @@ int main()
 
     menu();
 
-    Condition map[mapSize][mapSize];
-    for (size_t i = 0; i < mapSize; i++)
+    for (size_t i = 0; i < grand.size; i++)
     {
         for (size_t j = 0; j < mapSize; j++)
         {
-            map[i][j] = Null;
+            grand.map[i][j] = Null;
         }
     }
 
-    grandDraw(mapSize, (Condition *)map, spaceShip, enemy);
+    grandDraw(grand);
     system("pause");
     return 0;
 }
 
 /// function definition
-void save(Condition map[])
+bool save(grandStruct grand)
 {
-
+    fstream saveFile("SaveFile.bin", ios::binary | ios::trunc);
+    if(saveFile.write((char *) &grand , sizeof(grand)))
+        return true;
+    else
+        return false;
 }
 
 void menu()
@@ -131,7 +145,7 @@ void menu()
 
 
 
-void horizontalLineDraw(size_t mapSize)
+void horizontalLineDraw(unsigned int mapSize)
 {
     for (size_t i = 0; i < mapSize; i++)
     {
@@ -143,21 +157,21 @@ void horizontalLineDraw(size_t mapSize)
     cout << endl;
 }
 
-void grandDraw(size_t mapSize, Condition map[], spaceShipStruct spaceShip, enemyStruct enemy)
+void grandDraw(grandStruct grand)
 {
-    for (size_t i = 0; i < mapSize; i++)
+    for (size_t i = 0; i < grand.size; i++)
     {
-        horizontalLineDraw(mapSize);
-        for (size_t j = 0; j < mapSize; j++)
+        horizontalLineDraw(grand.size);
+        for (size_t j = 0; j < grand.size; j++)
         {
             cout << '|';
-            switch (*((map+i*mapSize) + j))
+            switch (grand.map[i][j])
             {
             case Enemy:
-                cout << ' ' << enemy.c << ' ';
+                cout << ' ' << grand.enemy.c << ' ';
                 break;
             case SpaceShip:
-                cout << ' ' << spaceShip.c << ' ';
+                cout << ' ' << grand.spaceShip.c << ' ';
                 break;
             default:
                 cout << "   ";
@@ -167,7 +181,8 @@ void grandDraw(size_t mapSize, Condition map[], spaceShipStruct spaceShip, enemy
         cout << '|';
         cout << endl;
     }
-    horizontalLineDraw(mapSize);
+    horizontalLineDraw(grand.size);
+    save(grand);
 }
 
 void move()
