@@ -77,9 +77,7 @@ struct grandStruct
     unsigned int size;
     enemyStruct enemy;
     spaceShipStruct spaceShip;
-    Condition **map = new Condition* [size];
-    Condition *map = new Condition [size];
-    
+    Condition **map;
 };
 
 /// function declaration
@@ -115,7 +113,7 @@ int main()
 
     while (true) 
 	{
-        menu();
+       startMenu();
 
         Condition map[mapSize][mapSize];
         for (size_t i = 0; i < mapSize; i++) 
@@ -126,7 +124,20 @@ int main()
             }
         }
 
-        grandDraw(mapSize, (Condition *) map, SpaceShip, Enemy);
+        // Print the game map    
+			grand.size = mapSize;
+		grand.map = new Condition*[grand.size];
+		for (size_t i = 0; i < grand.size; i++)
+		{
+		    grand.map[i] = new Condition[grand.size];
+		    for (size_t j = 0; j < grand.size; j++)
+		    {
+		        grand.map[i][j] = map[i][j];
+		    }
+		}
+        grand.size = mapSize;
+        grandDraw(grand);
+        
         cout << "Press 'm' to go back to the menu or any other key to exit: ";
         char input;
         cin >> input;
@@ -137,7 +148,7 @@ int main()
         else
         {
         	system("cls");
-             menu();
+            startMenu();
 		}
    }
 }
@@ -152,11 +163,11 @@ bool save(grandStruct grand)
         return false;
 }
 
-void menu()
+void startMenu()
 {
     int choice;
     bool gameStarted = false;
-
+     
     while (true) {
         cout << "======== Menu ========" << endl;
         cout << "1. Start Game" << endl;
@@ -225,17 +236,24 @@ void grandDraw(grandStruct grand)
         for (size_t j = 0; j < grand.size; j++)
         {
             cout << '|';
-            switch (grand.map[i][j])
+            if (i == grand.size - 1 && j == 7)
             {
-            case Enemy:
-                cout << ' ' << grand.enemy.c << ' ';
-                break;
-            case SpaceShip:
-                cout << ' ' << grand.spaceShip.c << ' ';
-                break;
-            default:
-                cout << "   ";
-                break;
+                cout << " # ";
+            }
+            else
+            {
+                switch (grand.map[i][j])
+                {
+                    case Enemy:
+                        cout << ' ' << grand.enemy.c << ' ';
+                        break;
+                    case SpaceShip:
+                        cout << ' ' << grand.spaceShip.c << ' ';
+                        break;
+                    default:
+                        cout << "   ";
+                        break;
+                }
             }
         }
         cout << '|';
@@ -245,7 +263,7 @@ void grandDraw(grandStruct grand)
     save(grand);
 }
 
-void move()
+void move(grandStruct& grand)
 {
 
 }
