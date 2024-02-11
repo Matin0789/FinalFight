@@ -21,15 +21,7 @@ authors:
 #define Blue    "\033[34m"
 #define Magenta "\033[35m"
 #define Cyan    "\033[36m"
-#define White   "\033[37m"
-#define BoldBlack   "\033[1m\033[30m"
-#define BoldRed     "\033[1m\033[31m"
-#define BoldGreen   "\033[1m\033[32m"
-#define BoldYellow  "\033[1m\033[33m"
-#define BoldBlue    "\033[1m\033[34m"
-#define BoldMagenta "\033[1m\033[35m"
-#define BoldCyan    "\033[1m\033[36m"
-#define BoldWhite   "\033[1m\033[37m"      
+#define White   "\033[37m"    
 
 #define BackgroundBlack     "\u001b[40m"
 #define BackgroundRed       "\u001b[41m"
@@ -49,9 +41,9 @@ using namespace std;
 ///enums
 enum Condition
 {
-    Null,
-    Enemy,
-    SpaceShip
+    Null,// The position is empty
+    Enemy,// the position is occupied by the enemy
+    SpaceShip// the position is occupied by our spaceship
 };
 
 
@@ -77,8 +69,7 @@ struct grandStruct
     unsigned int size;
     enemyStruct enemy;
     spaceShipStruct spaceShip;
-    Condition **map = new Condition* [size];
-    Condition *map = new Condition [size];
+    Condition map = new Condition [size*size];
     
 };
 
@@ -113,8 +104,6 @@ int main()
         {"Banshee", '*' , 4 , 6},
     };
 
-    menu();
-
     for (size_t i = 0; i < grand.size; i++)
     {
         for (size_t j = 0; j < mapSize; j++)
@@ -131,19 +120,38 @@ int main()
 /// function definition
 bool save(grandStruct grand)
 {
-    fstream saveFile("SaveFile.bin", ios::binary | ios::trunc);
-    if(saveFile.write((char *) &grand , sizeof(grand)))
-        return true;
-    else
+    fstream saveFile("SaveFile.bin", ios::out | ios::binary | ios::trunc);
+    if (!saveFile)
         return false;
+    
+    if(saveFile.write((char *) &grand , sizeof(grand)))
+    {
+        saveFile.close();
+        return true;
+    }
+    else
+    {
+        saveFile.close();
+        return false;
+    }
+        
 }
 
-void menu()
+bool load(grandStruct &grand)
 {
+    fstream saveFile("SaveFile.bin", ios::in | ios::binary);
+    if (!saveFile)
+        return false;
+    unsigned int size;
+    saveFile.read(reinterpret_cast<char*> (&size), sizeof(unsigned int));
+    saveFile.close();
+    saveFile.open("SaveFile.bin", ios::in | ios::binary);
+    if (!saveFile)
+        return false;
+    saveFile.read(reinterpret_cast<char*> (&grand), sizeof(unsigned int)+sizeof(enemyStruct)+sizeof(spaceShipStruct)+(sizeof(Condition)*size*size));
+    
 
 }
-
-
 
 void horizontalLineDraw(unsigned int mapSize)
 {
