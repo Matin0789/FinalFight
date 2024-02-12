@@ -60,7 +60,7 @@ struct enemyStruct
 struct spaceShipStruct
 {
     char c = '*';// space ship default charater
-    char shot = '\'';// shot default character
+    char shot = '^';// shot default character
     unsigned int heal; // space ship's health
 };
 
@@ -87,7 +87,7 @@ void grandDraw(grandStruct grand);
 
 // move functions
 void move();
-
+void shoot(grandStruct& grand);
 /// main function
 int main() 
 {
@@ -115,7 +115,7 @@ int main()
                 map[i][j] = Null;
             }
         }
-
+         
         // Print the game map    
 			grand.size = mapSize;
 		grand.map = new Condition*[grand.size];
@@ -127,9 +127,10 @@ int main()
 		        grand.map[i][j] = map[i][j];
 		    }
 		}
+		
         grand.size = mapSize;
         grandDraw(grand);
-        
+        shoot(grand);
         cout << "Press 'm' to go back to the menu or any other key to exit: ";
         char input;
         cin >> input;
@@ -207,6 +208,7 @@ void startMenu()
                     cout << "Game started!" << endl;
                     gameStarted = true;
                     return;
+                    
                 } 
 				else { cout << "Game is already started!" << endl;}
             
@@ -286,4 +288,53 @@ void grandDraw(grandStruct grand)
 void move(grandStruct& grand)
 {
 
+}
+
+void shoot(grandStruct& grand)
+{
+    // شمارنده موقعیت شلیک تیر
+    int bulletPosition = grand.size - 2;
+    
+    // مداوم شلیک کردن سفینه
+    while (true)
+    {
+        // پاک کردن یک خط بالایی برای نمایش تغییرات
+        system("cls");
+        
+        // تغییر موقعیت تیر
+        bulletPosition--;
+        
+        // برسی اگر موقعیت تیر به حداقل رسید، تیر متوقف می‌شود
+        if (bulletPosition < 0)
+            break;
+        
+        // به روز رسانی نقشه با قرار دادن تیر در موقعیت جدید
+        for (size_t i = 0; i < grand.size; i++)
+        {
+            for (size_t j = 0; j < grand.size; j++)
+            {
+                if (i == bulletPosition && j == grand.size / 2)
+                    grand.map[i][j] = SpaceShip; // نمایش تیر به صورت سفینه
+                else
+                    grand.map[i][j] = Null; // حالت پیش‌فرض خالی
+            }
+        }
+        
+        // نمایش نقشه
+        grandDraw(grand);
+        
+        // توقف برای مدت زمان کوتاه برای دیدن تغییرات
+        // شما می‌توانید این زمان را تغییر دهید یا حذف کنید
+        // اگر مدت زمان بیشتری قرار دهید، تیر با سرعت کمتر حرکت می‌کند
+        // اگر حذف کنید، تغییرات بلافاصله نمایش داده می‌شود
+        _sleep(10); // 100         
+        // تمیز کردن نقشه برای نمایش تغییرات بعدی
+        for (size_t i = 0; i < grand.size; i++)
+        {
+            for (size_t j = 0; j < grand.size; j++)
+            {
+                grand.map[i][j] = Null;
+            }
+        }
+    }
 }
