@@ -85,7 +85,7 @@ void grandDraw(size_t mapSize, Condition Map[], spaceShipStruct spaceShip, enemy
 void move();
 
 // spaceship  functions
-
+void spaceShip(size_t mapSize, Condition Map[], spaceShipStruct spaceShip, enemyStruct enemy);
 /// main function
 int main() 
 {
@@ -205,6 +205,7 @@ void grandDraw(size_t mapSize, Condition Map[], spaceShipStruct spaceShip, enemy
                 cout << ' ' << enemy.c << ' ';
                 break;
             case SpaceShip:
+	
                 cout << ' ' << spaceShip.c << ' ';
                 break;
             default:
@@ -218,9 +219,53 @@ void grandDraw(size_t mapSize, Condition Map[], spaceShipStruct spaceShip, enemy
     horizontalLineDraw(mapSize);
 }
 
-
-
-void move()
+void SpaceShip(size_t mapSize, Condition Map[], spaceShipStruct& spaceShip)
 {
+    size_t position = mapSize / 2;
+    Map[mapSize - 1][position] = SpaceShip;
+}
 
+void move(size_t mapSize, Condition Map[], spaceShipStruct& spaceShip)
+{
+    size_t position;
+    for (size_t i = mapSize - 1; i > 0; i--)
+    {
+        for (size_t j = 0; j < mapSize; j++)
+        {
+            if (Map[i][j] == SpaceShip)
+            {
+                position = j;
+                Map[i][j] = Null;
+                Map[i - 1][j] = SpaceShip;
+            }
+        }
+    }
+
+    // Handle user input for spaceship movement
+    char input;
+    cout << "Enter L to move left or R to move right: ";
+    cin >> input;
+
+    if (input == 'L' || input == 'l')
+    {
+        if (position - 1 >= 0)
+        {
+            Map[mapSize - 1][position - 1] = SpaceShip;
+        }
+        else
+        {
+            cout << "Invalid move! Spaceship cannot go beyond the limits." << endl;
+        }
+    }
+    else if (input == 'R' || input == 'r')
+    {
+        if (position + 1 < mapSize)
+        {
+            Map[mapSize - 1][position + 1] = SpaceShip;
+        }
+        else
+        {
+            cout << "Invalid move! Spaceship cannot go beyond the limits." << endl;
+        }
+    }
 }
