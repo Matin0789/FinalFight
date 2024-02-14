@@ -10,7 +10,7 @@ authors:
 #include <iostream> // Interaction with terminal 
 #include <stdlib.h> // Interaction with the operating system
 #include <ctime> // Get system clock for Primary seed of rand
-//#include <fstream> // Interaction with file
+#include <fstream> // Interaction with file
 
 /// defines
 #define Reset   "\033[0m"
@@ -219,13 +219,13 @@ void grandDraw(size_t mapSize, Condition Map[], spaceShipStruct spaceShip, enemy
     horizontalLineDraw(mapSize);
 }
 
-void SpaceShip(size_t mapSize, Condition Map[], spaceShipStruct& spaceShip)
+void SpaceShip(size_t mapSize, Condition Map[][], spaceShipStruct& spaceShip)
 {
     size_t position = mapSize / 2;
     Map[mapSize - 1][position] = SpaceShip;
 }
 
-void move(size_t mapSize, Condition Map[], spaceShipStruct& spaceShip)
+void move(size_t mapSize, Condition Map[][], spaceShipStruct& spaceShip)
 {
     size_t position;
     for (size_t i = mapSize - 1; i > 0; i--)
