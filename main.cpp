@@ -75,7 +75,7 @@ struct spaceShipStruct
 void save(Condition Map[]);
 
 // menu functions
-void menu();
+void menu(size_t mapSize, Condition Map[], spaceShipStruct spaceShip, enemyStruct enemy);
 
 // drawing grand functions
 void horizontalLineDraw(size_t mapSize);
@@ -102,7 +102,7 @@ int main()
         {"Banshee", '*' , 4 , 6},
     };
 
-   menu( mapSize, Condition Map[]);
+
     
     Condition Map[mapSize][mapSize];
     for (size_t i = 0; i < mapSize; i++)
@@ -113,10 +113,9 @@ int main()
         
         }
     }
-    
+    menu(mapSize, (Condition *)Map, spaceShip, enemy);
     grandDraw(mapSize, (Condition *)Map, spaceShip, enemy);
 	system("pause");
-    
     return 0;
 }
 
