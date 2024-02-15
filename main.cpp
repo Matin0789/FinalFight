@@ -219,13 +219,13 @@ void grandDraw(size_t mapSize, Condition Map[], spaceShipStruct spaceShip, enemy
     horizontalLineDraw(mapSize);
 }
 
-void SpaceShip(size_t mapSize, Condition Map[][], spaceShipStruct& spaceShip)
+void SpaceShip(size_t mapSize, Condition Map[][15], spaceShipStruct& spaceShip)
 {
     size_t position = mapSize / 2;
     Map[mapSize - 1][position] = SpaceShip;
 }
 
-void move(size_t mapSize, Condition Map[][], spaceShipStruct& spaceShip)
+void move(size_t mapSize, Condition Map[][15], spaceShipStruct& spaceShip)
 {
     size_t position;
     for (size_t i = mapSize - 1; i > 0; i--)
