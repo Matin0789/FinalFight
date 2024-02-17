@@ -11,10 +11,9 @@ authors:
 #include <stdlib.h> // Interaction with the operating system
 #include <ctime> // Get system clock for Primary seed of rand
 #include <fstream> // Interaction with file
-#include <vector>
+#include <array>
 
 /// defines
-
 // color define
 #define Reset   "\033[0m"
 #define Black   "\033[30m"
@@ -57,7 +56,7 @@ authors:
 using namespace std;
 
 /// enums
-enum Condition
+enum condition
 {
     Null,
     Enemy,
@@ -86,12 +85,10 @@ struct grandStruct
     unsigned int size;
     enemyStruct enemy;
     spaceShipStruct spaceShip;
-    vector<vector <int>> map; 
-
+    condition *map[];
 };
 /// function declaration
 // Preliminary function
-
 bool save(grandStruct grand);
 bool load(grandStruct &grand);
 
@@ -105,7 +102,8 @@ void shoot(grandStruct grand);
 
 //menu functions
 void pauseMenu();
-void startMenu(grandStruct &grand);
+unsigned int startMenu(grandStruct &grand);
+void gameSetting();
 
 /// main function
 int main() 
@@ -113,7 +111,7 @@ int main()
     srand(time(NULL));
 
     grandStruct grand;
-    grand.size = 15;
+
     enemyStruct typesOfEnemys[4] =
     {
         {"Dart" , '*' , 1 , 1},
@@ -124,14 +122,27 @@ int main()
 
     for (size_t i = 0; i < grand.size; i++)
     {
-        for (size_t j = 0; j < grand.size+1; j++)
+        for (size_t j = 0; j < grand.size; j++)
         {
             grand.map[i][j] = Null;
         }
     }
-    startMenu(grand);
+    switch (startMenu(grand))
+    {
+    case 1:
+        load(grand);
+        break;
+    case 2:
+        break;
+    case 3:
+        gameSetting();
+        break;
+    case 4:
+        exit(0);
+        break;
+    }
     grandDraw(grand);
-    //spaceShip();
+
 	system("pause");
     return 0;
 }
@@ -139,7 +150,6 @@ int main()
 /// function definition
 bool save(grandStruct grand)
 {
-
     fstream saveFile("SaveFile.bin", ios::binary | ios::trunc);
     if(saveFile.write((char *) &grand , sizeof(grand)))
     {
@@ -150,53 +160,84 @@ bool save(grandStruct grand)
         return false;
 }
 
-void startMenu(grandStruct &grand)
+bool load(grandStruct &grand)
 {
-	int choice;
-	bool gameStarted = false;
-        cout << "======== Menu ========" << endl;
-        cout << "1. Continue Game" << endl;
-        cout << "2. New Game" << endl;
-        cout << "3. Game Settings" << endl;
-        cout << "4. Quit Game" << endl;
-        cout << "=======================" << endl;
-        cout << "Enter your choice: ";
-        cin >> choice;
-  
+    unsigned int mapSize;
+    fstream loadFile("SaveFile.bin", ios::binary);
+    loadFile.read(loadFile.read((char *) &mapSize , sizeof(unsigned int)))
+    loadFile.close();
+    
+    loadFile.open("SaveFile.bin", ios::binary);
+    if(loadFile.read((unsigned int *) &grand , sizeof(grand)))
+    {
+    	return true;
+	}
+    else
+        return false;
 
-    // ...
-    switch (choice) {
+}
+
+unsigned int startMenu(grandStruct &grand)
+{
+	unsigned int marker;
+    unsigned int choice = 1;
+    do
+    {
+        marker = getchar();
+        cout << Green << "========= Menu =========" << Reset << endl;
+        switch (choice)
+        {
         case 1:
-            if (!gameStarted) {
-                // start
-                cout << "Game started!" << endl;
-                gameStarted = true;
-                grandDraw(grand);
-            } else {
-                cout << "Game is already started!" << endl;
-            }
+            cout << Green << "1. Continue Game" << Reset << endl;
+            cout << "2. New Game" << Reset << endl;
+            cout << "3. Game Settings" << Reset << endl;
+            cout << "4. Quit Game" << Reset << endl;
             break;
         case 2:
-            if (gameStarted) {
-                // stop
-                cout << "Game paused!" << endl;
-                gameStarted = false;
-            } else {
-                cout << "No game is currently running!" << endl;
-            }
+            cout << "1. Continue Game" << Reset << endl;
+            cout << Green << "2. New Game" << Reset << endl;
+            cout << "3. Game Settings" << Reset << endl;
+            cout << "4. Quit Game" << Reset << endl;
             break;
         case 3:
-            // Exit
-            cout << "Game exited!" << endl;
-            return; // توقف اجرای تابع بعد از خروج از بازی
-        default:
-            cout << "Invalid choice! Please try again." << endl;
+            cout << "1. Continue Game" << Reset << endl;
+            cout << "2. New Game" << Reset << endl;
+            cout << Green << "3. Game Settings" << Reset << endl;
+            cout << "4. Quit Game" << Reset << endl;
             break;
-    }
-    // ...
+        case 4:
+            cout << "1. Continue Game" << Reset << endl;
+            cout << "2. New Game" << Reset << endl;
+            cout << "3. Game Settings" << Reset << endl;
+            cout << Green << "4. Quit Game" << Reset << endl;
+            break;
+        }
+        cout << Green << "========================" << endl;
+        
+        switch (marker) 
+        {
+        case UP:
+            if (choice <= 1)
+                choice = 4;
+            else
+                choice--;
+            break;
+        case DOWN:
+            if (choice >= 4)
+                choice = 1;
+            else
+                choice++;
+            break;
+        case 10:
+            return choice;
+            break;
+        }
+    } while (true);
+}
 
+void pauseMenu()
+{
 
-        cout << endl;
 }
 
 void horizontalLineDraw(size_t size)
@@ -272,4 +313,9 @@ void move(grandStruct grand)
         }
     }while (flag == false);
     
+}
+
+void shoot(grandStruct grand)
+{
+
 }
