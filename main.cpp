@@ -95,10 +95,6 @@ struct grandStruct
 bool save(grandStruct grand);
 bool load(grandStruct &grand);
 
-// menu functions
-void startMenu(grandStruct);
-void pauseMenu(grandStruct);
-
 // drawing grand functions
 void horizontalLineDraw(size_t);
 void grandDraw(grandStruct);
@@ -111,16 +107,13 @@ void shoot(grandStruct grand);
 void pauseMenu();
 void startMenu(grandStruct &grand);
 
-// spaceship  functions
-void spaceShip(grandStruct grand);
-
 /// main function
 int main() 
 {
     srand(time(NULL));
 
-    size_t grand.size = 15;
     grandStruct grand;
+    grand.size = 15;
     enemyStruct typesOfEnemys[4] =
     {
         {"Dart" , '*' , 1 , 1},
@@ -129,15 +122,11 @@ int main()
         {"Banshee", '*' , 4 , 6},
     };
 
-
-    
-    Condition map[grand.size][grand.size];
     for (size_t i = 0; i < grand.size; i++)
     {
         for (size_t j = 0; j < grand.size+1; j++)
         {
-            map[i][j] = Null;
-        
+            grand.map[i][j] = Null;
         }
     }
     startMenu(grand);
@@ -210,9 +199,9 @@ void startMenu(grandStruct &grand)
         cout << endl;
 }
 
-void horizontalLineDraw(size_t grand.size)
+void horizontalLineDraw(size_t size)
 {
-    for (size_t i = 0; i < grand.size; i++)
+    for (size_t i = 0; i < size; i++)
     {
         for (size_t j = 0; j < 4; j++)
         {
@@ -281,5 +270,6 @@ void move(grandStruct grand)
             flag = false;
             break;
         }
-    }while (flag == false) 
+    }while (flag == false);
+    
 }
