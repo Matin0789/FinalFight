@@ -11,8 +11,11 @@ authors:
 #include <stdlib.h> // Interaction with the operating system
 #include <ctime> // Get system clock for Primary seed of rand
 #include <fstream> // Interaction with file
+#include <vector>
 
 /// defines
+
+// color define
 #define Reset   "\033[0m"
 #define Black   "\033[30m"
 #define Red     "\033[31m"
@@ -44,9 +47,16 @@ authors:
 #define Underline   "\u001b[4m"
 #define Reversed    "\u001b[7m"
 
+
+// arrow ascii codes
+#define UP 72
+#define DOWN 80
+#define LEFT 75
+#define RIGHT 77
+
 using namespace std;
 
-///enums
+/// enums
 enum Condition
 {
     Null,
@@ -66,34 +76,51 @@ struct enemyStruct
 struct spaceShipStruct
 {
     char c = '#';// space ship default charater
-    char shot = '^';// shot default character
+    char shoot = '^';// shot default character
     size_t heal; // space ship's health
+    unsigned int x;
 };
 
+struct grandStruct
+{
+    unsigned int size;
+    enemyStruct enemy;
+    spaceShipStruct spaceShip;
+    vector<vector <int>> map; 
+
+};
 /// function declaration
 // Preliminary function
-void save(Condition Map[]);
+
+bool save(grandStruct grand);
+bool load(grandStruct &grand);
 
 // menu functions
-void menu(size_t mapSize, Condition Map[], spaceShipStruct spaceShip, enemyStruct enemy);
+void startMenu(grandStruct);
+void pauseMenu(grandStruct);
 
 // drawing grand functions
-void horizontalLineDraw(size_t mapSize);
-void grandDraw(size_t mapSize, Condition Map[], spaceShipStruct spaceShip, enemyStruct enemy);
+void horizontalLineDraw(size_t);
+void grandDraw(grandStruct);
 
-// move functions
-void move();
+// move and shoot functions
+void move(grandStruct grand);
+void shoot(grandStruct grand);
+
+//menu functions
+void pauseMenu();
+void startMenu(grandStruct &grand);
 
 // spaceship  functions
-void spaceShip(size_t mapSize, Condition Map[], spaceShipStruct spaceShip, enemyStruct enemy);
+void spaceShip(grandStruct grand);
+
 /// main function
 int main() 
 {
     srand(time(NULL));
 
-    size_t mapSize = 15;
-    spaceShipStruct spaceShip;
-    enemyStruct enemy;
+    size_t grand.size = 15;
+    grandStruct grand;
     enemyStruct typesOfEnemys[4] =
     {
         {"Dart" , '*' , 1 , 1},
@@ -104,35 +131,45 @@ int main()
 
 
     
-    Condition Map[mapSize][mapSize];
-    for (size_t i = 0; i < mapSize; i++)
+    Condition map[grand.size][grand.size];
+    for (size_t i = 0; i < grand.size; i++)
     {
-        for (size_t j = 0; j < mapSize+1; j++)
+        for (size_t j = 0; j < grand.size+1; j++)
         {
-            Map[i][j] = Null;
+            map[i][j] = Null;
         
         }
     }
-    menu(mapSize, (Condition *)Map, spaceShip, enemy);
-    grandDraw(mapSize, (Condition *)Map, spaceShip, enemy);
+    startMenu(grand);
+    grandDraw(grand);
+    //spaceShip();
 	system("pause");
     return 0;
 }
 
 /// function definition
-void save(Condition Map[])
+bool save(grandStruct grand)
 {
 
+    fstream saveFile("SaveFile.bin", ios::binary | ios::trunc);
+    if(saveFile.write((char *) &grand , sizeof(grand)))
+    {
+    	saveFile << flush;
+    	return true;
+	}
+    else
+        return false;
 }
 
-void menu(size_t mapSize, Condition Map[], spaceShipStruct spaceShip, enemyStruct enemy)
+void startMenu(grandStruct &grand)
 {
 	int choice;
 	bool gameStarted = false;
         cout << "======== Menu ========" << endl;
-        cout << "1. Start Game" << endl;
-        cout << "2. Pause Game" << endl;
-        cout << "3. Quit Game" << endl;
+        cout << "1. Continue Game" << endl;
+        cout << "2. New Game" << endl;
+        cout << "3. Game Settings" << endl;
+        cout << "4. Quit Game" << endl;
         cout << "=======================" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
@@ -145,7 +182,7 @@ void menu(size_t mapSize, Condition Map[], spaceShipStruct spaceShip, enemyStruc
                 // start
                 cout << "Game started!" << endl;
                 gameStarted = true;
-                grandDraw(mapSize, (Condition *)Map, spaceShip, enemy);
+                grandDraw(grand);
             } else {
                 cout << "Game is already started!" << endl;
             }
@@ -173,14 +210,9 @@ void menu(size_t mapSize, Condition Map[], spaceShipStruct spaceShip, enemyStruc
         cout << endl;
 }
 
-    
-
-
-
-
-void horizontalLineDraw(size_t mapSize)
+void horizontalLineDraw(size_t grand.size)
 {
-    for (size_t i = 0; i < mapSize; i++)
+    for (size_t i = 0; i < grand.size; i++)
     {
         for (size_t j = 0; j < 4; j++)
         {
@@ -190,23 +222,23 @@ void horizontalLineDraw(size_t mapSize)
     cout << endl;
 }
 
-void grandDraw(size_t mapSize, Condition Map[], spaceShipStruct spaceShip, enemyStruct enemy)
+void grandDraw(grandStruct grand)
 {
 
-    for (size_t i = 0; i < mapSize; i++)
+    for (size_t i = 0; i < grand.size; i++)
     {
-        horizontalLineDraw(mapSize);
-        for (size_t j = 0; j < mapSize; j++)
+        horizontalLineDraw(grand.size);
+        for (size_t j = 0; j < grand.size; j++)
         {
             cout << '|';
-            switch (*((Map+i*mapSize) + j))
+            switch (grand.map[i][j])
             {
             case Enemy:
-                cout << ' ' << enemy.c << ' ';
+                cout << ' ' << grand.enemy.c << ' ';
                 break;
             case SpaceShip:
 	
-                cout << ' ' << spaceShip.c << ' ';
+                cout << ' ' << grand.spaceShip.c << ' ';
                 break;
             default:
                 cout << "   ";
@@ -216,56 +248,38 @@ void grandDraw(size_t mapSize, Condition Map[], spaceShipStruct spaceShip, enemy
         cout << '|';
         cout << endl;
     }
-    horizontalLineDraw(mapSize);
+    horizontalLineDraw(grand.size);
 }
 
-void SpaceShip(size_t mapSize, Condition Map[][15], spaceShipStruct& spaceShip)
+void move(grandStruct grand)
 {
-    size_t position = mapSize / 2;
-    Map[mapSize - 1][position] = SpaceShip;
-}
-
-void move(size_t mapSize, Condition Map[][15], spaceShipStruct& spaceShip)
-{
-    size_t position;
-    for (size_t i = mapSize - 1; i > 0; i--)
+    char m;
+    m = getchar();
+    bool flag = true;
+    do 
     {
-        for (size_t j = 0; j < mapSize; j++)
+        switch (m) 
         {
-            if (Map[i][j] == SpaceShip)
-            {
-                position = j;
-                Map[i][j] = Null;
-                Map[i - 1][j] = SpaceShip;
-            }
+        case RIGHT:
+            grand.map[grand.spaceShip.x][grand.size - 1] = Null;
+            grand.spaceShip.x += 1;
+            grand.map[grand.spaceShip.x][grand.size - 1] = SpaceShip;
+            flag = true;
+            shoot(grand);
+            break;
+        case LEFT:
+            grand.map[grand.spaceShip.x][grand.size - 1] = Null;
+            grand.spaceShip.x -= 1;
+            grand.map[grand.spaceShip.x][grand.size - 1] = SpaceShip;
+            shoot(grand);
+            flag = true;
+            break;
+        case DOWN:
+            shoot(grand);
+            break;
+        default:
+            flag = false;
+            break;
         }
-    }
-
-    // Handle user input for spaceship movement
-    char input;
-    cout << "Enter L to move left or R to move right: ";
-    cin >> input;
-
-    if (input == 'L' || input == 'l')
-    {
-        if (position - 1 >= 0)
-        {
-            Map[mapSize - 1][position - 1] = SpaceShip;
-        }
-        else
-        {
-            cout << "Invalid move! Spaceship cannot go beyond the limits." << endl;
-        }
-    }
-    else if (input == 'R' || input == 'r')
-    {
-        if (position + 1 < mapSize)
-        {
-            Map[mapSize - 1][position + 1] = SpaceShip;
-        }
-        else
-        {
-            cout << "Invalid move! Spaceship cannot go beyond the limits." << endl;
-        }
-    }
+    }while (flag == false) 
 }
