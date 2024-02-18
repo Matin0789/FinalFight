@@ -7,13 +7,13 @@ authors:
 
 
 /// libraries
-#include <iostream> // Interaction with terminal 
-#include <stdlib.h> // Interaction with the operating system
-#include <ctime> // Get system clock for Primary seed of rand
-#include <fstream> // Interaction with file
+#include <iostream>    // Interaction with terminal 
+#include <stdlib.h>    // Interaction with the operating system
+#include <ctime>       // Get system clock for Primary seed of rand
+#include <fstream>     // Interaction with file
 #include <conio.h>
-#include<windows.h>           // for windows
-//#include<unistd.h>               // for linux 
+#include<windows.h>    // for windows
+//#include<unistd.h>   // for linux 
 
 
 /// defines
@@ -133,10 +133,7 @@ int main()
         move(grand);
         save(grand);
     }
-    system("pause");
-    
-
-	
+	system("pause");
     return 0;
 }
 
@@ -309,7 +306,62 @@ void newGame(grandStruct &grand)
 
 void gameSetting()
 {
+    unsigned int marker = 1;
+    bool menuSelected = false;
 
+    do
+    {
+        system("cls");
+        cout << Green << "========= Game Settings =========" << Reset << endl;
+
+      
+        if (marker == 1)
+            cout << Bold << Black <<  BackgroundGreen;
+        cout << "Change Spaceship Character" << Reset << endl;
+
+        if (marker == 2)
+            cout << Bold << Black <<  BackgroundGreen;
+        cout << "Change Enemy Character" << Reset << endl;
+
+        if (marker == 3)
+            cout << Bold << Black <<  BackgroundGreen;
+        cout << "Return to Main Menu" << Reset << endl;
+
+       
+        int key = getch();
+
+       
+        switch (key)
+        {
+        case UP:
+            if (marker > 1)
+                marker--;
+            break;
+
+        case DOWN:
+            if (marker < 3)
+                marker++;
+            break;
+
+        case 13:  
+            if (marker == 1)
+            {
+               
+                cout << "Enter new character for Spaceship: ";
+               
+            }
+            else if (marker == 2)
+            {
+                cout << "Enter new character for Enemy: ";
+               
+            }
+            else if (marker == 3)
+            {
+                menuSelected = true; 
+            }
+            break;
+        }
+    } while (!menuSelected);
 }
 
 void horizontalLineDraw(size_t size)
@@ -409,5 +461,4 @@ void move(grandStruct &grand)
 
 void shoot(grandStruct &grand)
 {
-
 }
