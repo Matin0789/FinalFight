@@ -11,7 +11,10 @@ authors:
 #include <stdlib.h> // Interaction with the operating system
 #include <ctime> // Get system clock for Primary seed of rand
 #include <fstream> // Interaction with file
-#include <array>
+#include <conio.h>
+#include<windows.h>           // for windows
+//#include<unistd.h>               // for linux 
+
 
 /// defines
 // color define
@@ -86,7 +89,7 @@ struct grandStruct
     unsigned int size;
     enemyStruct enemy;
     spaceShipStruct spaceShip;
-    condition *map[];
+    condition **map;
 };
 /// function declaration
 // Preliminary function
@@ -112,7 +115,7 @@ int main()
     srand(time(NULL));
 
     grandStruct grand;
-    grand.size = 15;
+
     enemyStruct typesOfEnemys[4] =
     {
         {"Dart" , '*' , 1 , 1},
@@ -120,30 +123,73 @@ int main()
         {"Wraith", '*' , 3 , 4},
         {"Banshee", '*' , 4 , 6},
     };
-
-    for (size_t i = 0; i < grand.size; i++)
-    {
-        for (size_t j = 0; j < grand.size; j++)
-        {
-            grand.map[i][j] = Null;
-        }
-    }
+    bool flag = true;
     switch (startMenu(grand))
     {
     case 1:
+        system("cls");
         load(grand);
         break;
     case 2:
+        system("cls");
+        do
+        {
+            cout << BoldRed << "New Game" << Reset << endl;
+            cout << "Please enter the map grand size you want:";
+            cin >> grand.size;
+            if (grand.size < 15)
+            {
+                system("cls");
+                cout << "Undefiend!!"<< endl << "map grand size cannot be less than 15" << endl <<"please try again" << endl;
+                flag = false;
+                Sleep(5);
+            }
+            else
+            {
+                flag = true;
+            }
+        } while (flag == false);
+    
+        if (grand.size%2 == 0)
+        {
+            cout << "The map size cannot be even play start in grand size " << grand.size - 1 << endl;
+            grand.size--;
+            Sleep(5);
+        }
+        grand.map = new condition*[grand.size];
+        for (size_t i = 0; i < grand.size ; i++)
+        {
+            grand.map[i] = new condition[grand.size];
+        }
+        for (size_t i = 0; i < grand.size; i++)
+        {
+            for (size_t j = 0; j < grand.size; j++)
+            {
+                grand.map[i][j] = Null;
+            }
+        }
+
+        grand.spaceShip.x = ((grand.size - 1)/2);
+        grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
         break;
+
     case 3:
+        system("cls");
         gameSetting();
         break;
     case 4:
+        system("cls");
         exit(0);
         break;
     }
-    grandDraw(grand);
 
+    
+
+    
+
+
+    grandDraw(grand);
+    
 	system("pause");
     return 0;
 }
@@ -185,7 +231,7 @@ unsigned int startMenu(grandStruct &grand)
     unsigned int choice = 1;
     do
     {
-        marker = getchar();
+        system("cls");
         cout << Green << "========= Menu =========" << Reset << endl;
         switch (choice)
         {
@@ -214,8 +260,9 @@ unsigned int startMenu(grandStruct &grand)
             cout << Green << "4. Quit Game" << Reset << endl;
             break;
         }
-        cout << Green << "========================" << endl;
-        
+        cout << Green << "========================" << Reset << endl;
+        marker = getch();
+
         switch (marker) 
         {
         case UP:
@@ -230,7 +277,7 @@ unsigned int startMenu(grandStruct &grand)
             else
                 choice++;
             break;
-        case 10:
+        case 13:
             return choice;
             break;
         }
@@ -261,7 +308,7 @@ void horizontalLineDraw(size_t size)
 
 void grandDraw(grandStruct grand)
 {
-
+    system("cls");
     for (size_t i = 0; i < grand.size; i++)
     {
         horizontalLineDraw(grand.size);
