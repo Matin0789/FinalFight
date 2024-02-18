@@ -183,7 +183,7 @@ int main()
         break;
     }
     grandDraw(grand);
-    
+    move(grand);
 	system("pause");
     return 0;
 }
@@ -386,39 +386,40 @@ void grandDraw(grandStruct grand)
 
 void move(grandStruct grand)
 {
-    char m;
-    m = getchar();
-    bool flag = true;
-    do 
+    bool shootingMode = false;
+    int currentX = grand.spaceShip.x;
+    int currentY = grand.size - 1;
+
+    while (true)
     {
-        switch (m) 
+        if (_kbhit())
         {
-        case RIGHT:
-            grand.map[grand.spaceShip.x][grand.size - 1] = Null;
-            grand.spaceShip.x += 1;
-            grand.map[grand.spaceShip.x][grand.size - 1] = SpaceShip;
-            flag = true;
-            shoot(grand);
-            break;
-        case LEFT:
-            grand.map[grand.spaceShip.x][grand.size - 1] = Null;
-            grand.spaceShip.x -= 1;
-            grand.map[grand.spaceShip.x][grand.size - 1] = SpaceShip;
-            shoot(grand);
-            flag = true;
-            break;
-        case DOWN:
-            shoot(grand);
-            break;
-        default:
-            flag = false;
-            break;
+            int key = _getch();
+
+            if (key == LEFT && currentX > 0) // حرکت به چپ
+            {
+                grand.map[currentY][currentX] = Null; // حذف موقعیت فضاپیما قبلی
+                currentX--;
+                grand.map[currentY][currentX] = SpaceShip; // ثبت موقعیت جدید فضاپیما
+                grandDraw(grand);
+            }
+            else if (key == RIGHT && currentX < grand.size - 1) // حرکت به راست
+            {
+                grand.map[currentY][currentX] = Null; // حذف موقعیت فضاپیما قبلی
+                currentX++;
+                grand.map[currentY][currentX] = SpaceShip; // ثبت موقعیت جدید فضاپیما
+                grandDraw(grand);
+            }
+            else if (key == DOWN && !shootingMode) // شلیک
+            {
+                shootingMode = true;
+                shoot(grand);
+                grandDraw(grand);
+            }
         }
-    }while (flag == false);
-    
+    }
 }
 
 void shoot(grandStruct grand)
 {
-
 }
