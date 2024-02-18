@@ -39,7 +39,7 @@ authors:
 using namespace std;
 
 ///enums
-enum Condition
+enum condition
 {
     Null,// The position is empty
     Enemy,// the position is occupied by the enemy
@@ -66,10 +66,11 @@ struct spaceShipStruct
 
 struct grandStruct
 {
+    
     unsigned int size;
     enemyStruct enemy;
     spaceShipStruct spaceShip;
-    Condition **map;
+    condition *map[];
 };
 
 /// function declaration
@@ -107,7 +108,7 @@ int main()
 	{
        startMenu();
 
-        Condition map[mapSize][mapSize];
+        condition map[mapSize][mapSize];
         for (size_t i = 0; i < mapSize; i++) 
 		{
             for (size_t j = 0; j < mapSize; j++) 
@@ -118,10 +119,10 @@ int main()
 
         // Print the game map    
 			grand.size = mapSize;
-		grand.map = new Condition*[grand.size];
+		//grand.map = new condition*[grand.size];
 		for (size_t i = 0; i < grand.size; i++)
 		{
-		    grand.map[i] = new Condition[grand.size];
+		    grand.map[i] = new condition[grand.size];
 		    for (size_t j = 0; j < grand.size; j++)
 		    {
 		        grand.map[i][j] = map[i][j];
@@ -177,7 +178,7 @@ bool load(grandStruct &grand)
     if (!saveFile)
         return false;
     
-    unsigned int sizeOfStruct = sizeof(unsigned int)+sizeof(enemyStruct)+sizeof(spaceShipStruct)+(sizeof(Condition)*mapSize*mapSize);
+    unsigned int sizeOfStruct = sizeof(unsigned int)+sizeof(enemyStruct)+sizeof(spaceShipStruct)+(sizeof(condition)*mapSize*mapSize);
     if (saveFile.read(reinterpret_cast<char*> (&grand), sizeOfStruct))
         return true;
     else
