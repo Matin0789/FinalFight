@@ -78,44 +78,47 @@ struct enemyStruct
 struct spaceShipStruct
 {
     char c = '#';// space ship default charater
-    char shoot = '^';// shot default character
-    size_t heal; // space ship's health
-    unsigned int x;
+    size_t heal = 3;// space ship's health
+    unsigned int x;// condition of the spaceship
 };
 
 struct grandStruct
 {
-    
     unsigned int size;
     enemyStruct enemy;
     spaceShipStruct spaceShip;
     condition **map;
 };
+
+struct bollets
+{
+    int x;// row of the bollets
+    int y;// column of the bollets
+    char c = '^';// shot default character
+};
+
 /// function declaration
 // Preliminary function
-bool save(grandStruct grand);
+bool save(grandStruct &grand);
 bool load(grandStruct &grand);
-
+void newGame(grandStruct &grand);
 // drawing grand functions
 void horizontalLineDraw(size_t);
-void grandDraw(grandStruct);
+void grandDraw(grandStruct &grand);
 
 // move and shoot functions
-void move(grandStruct grand);
-void shoot(grandStruct grand);
+void move(grandStruct &grand);
+void shoot(grandStruct &grand);
 
 //menu functions
-void pauseMenu();
-unsigned int startMenu(grandStruct &grand);
+void menu(grandStruct &grand);
 void gameSetting();
 
 /// main function
 int main() 
 {
     srand(time(NULL));
-
     grandStruct grand;
-
     enemyStruct typesOfEnemys[4] =
     {
         {"Dart" , '*' , 1 , 1},
@@ -123,81 +126,24 @@ int main()
         {"Wraith", '*' , 3 , 4},
         {"Banshee", '*' , 4 , 6},
     };
-    bool flag = true;
-    switch (startMenu(grand))
+    menu(grand);
+    while (grand.spaceShip.heal > 0)
     {
-    case 1:
-        system("cls");
-        load(grand);
-        break;
-    case 2:
-        system("cls");
-        do
-        {
-            cout << BoldRed << "New Game" << Reset << endl;
-            cout << "Please enter the map grand size you want:";
-            cin >> grand.size;
-            if (grand.size < 15)
-            {
-                system("cls");
-                cout << "Undefiend!!"<< endl << "map grand size cannot be less than 15" << endl <<"please try again" << endl;
-                flag = false;
-                Sleep(5);
-            }
-            else
-            {
-                flag = true;
-            }
-        } while (flag == false);
-    
-        if (grand.size%2 == 0)
-        {
-            cout << "The map size cannot be even play start in grand size " << grand.size - 1 << endl;
-            grand.size--;
-            Sleep(5);
-        }
-        grand.map = new condition*[grand.size];
-        for (size_t i = 0; i < grand.size ; i++)
-        {
-            grand.map[i] = new condition[grand.size];
-        }
-        for (size_t i = 0; i < grand.size; i++)
-        {
-            for (size_t j = 0; j < grand.size; j++)
-            {
-                grand.map[i][j] = Null;
-            }
-        }
-
-        grand.spaceShip.x = ((grand.size - 1)/2);
-        grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
-        break;
-
-    case 3:
-        system("cls");
-        gameSetting();
-        break;
-    case 4:
-        system("cls");
-        exit(0);
-        break;
+        grandDraw(grand);
+        move(grand);
+        save(grand);
     }
-
+    system("pause");
     
 
-    
-
-
-    grandDraw(grand);
-    
-	system("pause");
+	
     return 0;
 }
 
 /// function definition
-bool save(grandStruct grand)
+bool save(grandStruct &grand)
 {
-    fstream saveFile("SaveFile.bin", ios::binary | ios::trunc);
+    fstream saveFile("SaveFile.bin", ios::binary | ios::trunc | ios::out);
     if(saveFile.write((char *) &grand , sizeof(grand)))
     {
     	saveFile << flush;
@@ -210,12 +156,24 @@ bool save(grandStruct grand)
 bool load(grandStruct &grand)
 {
     unsigned int mapSize;
-    fstream loadFile("SaveFile.bin", ios::binary);
+    fstream loadFile("SaveFile.bin", ios::binary | ios::in);
     loadFile.read((char *) &mapSize , sizeof(unsigned int));
     loadFile.close();
-    
-    loadFile.open("SaveFile.bin", ios::binary);
-    unsigned int sizeOfStruct = sizeof(unsigned int)+sizeof(enemyStruct)+sizeof(spaceShipStruct)+(sizeof(condition)*mapSize*mapSize);
+    grand.map = new condition*[mapSize];
+        for (size_t i = 0; i < mapSize ; i++)
+        {
+            grand.map[i] = new condition[mapSize];
+        }
+        for (size_t i = 0; i < mapSize; i++)
+        {
+            for (size_t j = 0; j < mapSize; j++)
+            {
+                grand.map[i][j] = Null;
+            }
+        }
+    loadFile.open("SaveFile.bin", ios::binary | ios::in);
+
+    unsigned int sizeOfStruct = sizeof(unsigned int)+sizeof(enemyStruct)+sizeof(spaceShipStruct)+(sizeof(condition));
     if(loadFile.read((char *) &grand , sizeOfStruct))
     {
     	return true;
@@ -225,7 +183,7 @@ bool load(grandStruct &grand)
 
 }
 
-unsigned int startMenu(grandStruct &grand)
+void menu(grandStruct &grand)
 {
 	unsigned int marker;
     unsigned int choice = 1;
@@ -236,28 +194,28 @@ unsigned int startMenu(grandStruct &grand)
         switch (choice)
         {
         case 1:
-            cout << Green << "1. Continue Game" << Reset << endl;
-            cout << "2. New Game" << Reset << endl;
-            cout << "3. Game Settings" << Reset << endl;
-            cout << "4. Quit Game" << Reset << endl;
+            cout << Bold << Black <<  BackgroundGreen << "Continue Game" << Reset << endl;
+            cout << "New Game" << Reset << endl;
+            cout << "Game Settings" << Reset << endl;
+            cout << "Quit Game" << Reset << endl;
             break;
         case 2:
-            cout << "1. Continue Game" << Reset << endl;
-            cout << Green << "2. New Game" << Reset << endl;
-            cout << "3. Game Settings" << Reset << endl;
-            cout << "4. Quit Game" << Reset << endl;
+            cout << "Continue Game" << Reset << endl;
+            cout << Bold << Black << BackgroundGreen << "New Game" << Reset << endl;
+            cout << "Game Settings" << Reset << endl;
+            cout << "Quit Game" << Reset << endl;
             break;
         case 3:
-            cout << "1. Continue Game" << Reset << endl;
-            cout << "2. New Game" << Reset << endl;
-            cout << Green << "3. Game Settings" << Reset << endl;
-            cout << "4. Quit Game" << Reset << endl;
+            cout << "Continue Game" << Reset << endl;
+            cout << "New Game" << Reset << endl;
+            cout << Bold << Black <<  BackgroundGreen << "Game Settings" << Reset << endl;
+            cout << "Quit Game" << Reset << endl;
             break;
         case 4:
-            cout << "1. Continue Game" << Reset << endl;
-            cout << "2. New Game" << Reset << endl;
-            cout << "3. Game Settings" << Reset << endl;
-            cout << Green << "4. Quit Game" << Reset << endl;
+            cout << "Continue Game" << Reset << endl;
+            cout << "New Game" << Reset << endl;
+            cout << "Game Settings" << Reset << endl;
+            cout << Bold << Black <<  BackgroundGreen << "Quit Game" << Reset << endl;
             break;
         }
         cout << Green << "========================" << Reset << endl;
@@ -277,16 +235,76 @@ unsigned int startMenu(grandStruct &grand)
             else
                 choice++;
             break;
-        case 13:
-            return choice;
+        case 13:// Enter
+            bool flag = true;
+            switch (choice)
+            {
+            case 1:
+                system("cls");
+                load(grand);
+                return ;
+                break;
+            case 2:
+                newGame(grand);
+                return ;
+                break;
+            case 3:
+                system("cls");
+                gameSetting();
+                break;
+            case 4:
+                system("cls");
+                exit(0);
+                break;
+            }
             break;
         }
+        
     } while (true);
 }
 
-void pauseMenu()
+void newGame(grandStruct &grand)
 {
-
+    bool flag = false;
+    grand.map = NULL;
+    system("cls");
+    do
+    {
+        cout << BoldRed << "New Game" << Reset << endl;
+        cout << "Please enter the map grand size you want:";
+        cin >> grand.size;
+        if (grand.size < 15)
+        {
+            system("cls");
+            cout << "Undefiend!!"<< endl << "map grand size cannot be less than 15" << endl <<"please try again" << endl;
+            flag = false;
+            Sleep(5);
+        }
+        else
+        {
+            flag = true;
+        }
+    } while (flag == false);
+    if (grand.size%2 == 0)
+    {
+        cout << "The map size cannot be even play start in grand size " << grand.size - 1 << endl;
+        grand.size--;
+        Sleep(5);
+    }
+    grand.map = new condition*[grand.size];
+    for (size_t i = 0; i < grand.size ; i++)
+    {
+        grand.map[i] = new condition[grand.size];
+    }
+    for (size_t i = 0; i < grand.size; i++)
+    {
+        for (size_t j = 0; j < grand.size; j++)
+        {
+            grand.map[i][j] = Null;
+        }
+    }
+    grand.spaceShip.x = ((grand.size - 1)/2);
+    grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
 }
 
 void gameSetting()
@@ -306,9 +324,10 @@ void horizontalLineDraw(size_t size)
     cout << endl;
 }
 
-void grandDraw(grandStruct grand)
+void grandDraw(grandStruct &grand)
 {
     system("cls");
+    cout << "heal = " << Red << grand.spaceShip.heal << Reset << endl;
     for (size_t i = 0; i < grand.size; i++)
     {
         horizontalLineDraw(grand.size);
@@ -335,41 +354,60 @@ void grandDraw(grandStruct grand)
     horizontalLineDraw(grand.size);
 }
 
-void move(grandStruct grand)
+void move(grandStruct &grand)
 {
-    char m;
-    m = getchar();
     bool flag = true;
     do 
     {
-        switch (m) 
+        switch (getch())
         {
         case RIGHT:
-            grand.map[grand.spaceShip.x][grand.size - 1] = Null;
-            grand.spaceShip.x += 1;
-            grand.map[grand.spaceShip.x][grand.size - 1] = SpaceShip;
+            if (grand.spaceShip.x < grand.size - 1)
+            {
+                grand.map[grand.size - 1][grand.spaceShip.x] = Null;
+                grand.spaceShip.x += 1;
+                grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
+            }
+            else
+            {
+                grand.map[grand.size - 1][grand.spaceShip.x] = Null;
+                grand.spaceShip.x = 0;
+                grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
+            }   
             flag = true;
             shoot(grand);
             break;
         case LEFT:
-            grand.map[grand.spaceShip.x][grand.size - 1] = Null;
-            grand.spaceShip.x -= 1;
-            grand.map[grand.spaceShip.x][grand.size - 1] = SpaceShip;
+            if (grand.spaceShip.x > 0)
+            {
+                grand.map[grand.size - 1][grand.spaceShip.x] = Null;
+                grand.spaceShip.x -= 1;
+                grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
+            }
+            else
+            {
+                grand.map[grand.size - 1][grand.spaceShip.x] = Null;
+                grand.spaceShip.x = (grand.size - 1);
+                grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
+            }
             shoot(grand);
             flag = true;
             break;
         case DOWN:
             shoot(grand);
             break;
+        case UP:
+            menu(grand);
+            break;
         default:
             flag = false;
             break;
         }
     }while (flag == false);
-    
+
 }
 
-void shoot(grandStruct grand)
+void shoot(grandStruct &grand)
 {
 
 }
