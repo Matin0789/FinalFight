@@ -63,7 +63,8 @@ enum condition
 {
     Null,
     Enemy,
-    SpaceShip
+    SpaceShip, 
+    bullets
 };
 
 /// structs
@@ -90,7 +91,7 @@ struct grandStruct
     condition **map;
 };
 
-struct bollets
+struct bullets
 {
     int x;// row of the bollets
     int y;// column of the bollets
@@ -427,7 +428,7 @@ void move(grandStruct &grand)
                 grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
             }   
             flag = true;
-            shoot(grand);
+        //    shoot(grand);
             break;
         case LEFT:
             if (grand.spaceShip.x > 0)
@@ -442,7 +443,7 @@ void move(grandStruct &grand)
                 grand.spaceShip.x = (grand.size - 1);
                 grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
             }
-            shoot(grand);
+//            shoot(grand);
             flag = true;
             break;
         case DOWN:
@@ -461,4 +462,57 @@ void move(grandStruct &grand)
 
 void shoot(grandStruct &grand)
 {
+    bullets bullet;
+    bullet.x = grand.spaceShip.x;
+    bullet.y = grand.spaceShip.y;
+
+    while (true)
+    {
+        // Clear previous position of the bullet
+        grand.map[bullet.x][bullet.y] = Null;
+
+        // Move the bullet upwards
+        bullet.x--;
+
+        // Check if the bullet hits an enemy
+        if (grand.map[bullet.x][bullet.y] == Enemy)
+        {
+            // Decrease enemy's health
+            grand.enemy.heal--;
+
+            // Check if the enemy is destroyed
+            if (grand.enemy.heal <= 0)
+            {
+                // Remove enemy from the map
+                for (size_t i = 0; i < grand.size; i++)
+                {
+                    for (size_t j = 0; j < grand.size; j++)
+                    {
+                        if (grand.map[i][j] == Enemy)
+                            grand.map[i][j] = Null;
+                    }
+                }
+            }
+
+            // Clear bullet position
+            grand.map[bullet.x][bullet.y] = Null;
+
+            // Exit the shooting loop
+            break;
+        }
+
+        // Check if the bullet reaches the top of the map
+        if (bullet.x == 0)
+        {
+            // Clear bullet position
+            grand.map[bullet.x][bullet.y] = Null;
+
+            // Exit the shooting loop
+            break;
+        }
+
+        grand.map[bullet.x][bullet.y] = bullet;
+
+        Sleep(100);
+    }
 }
