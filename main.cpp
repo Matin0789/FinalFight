@@ -5,13 +5,13 @@ authors:
     Nima makhmali, Student No:40212358035
 */
 
-
 /// libraries
 #include <iostream>    // Interaction with terminal 
 #include <stdlib.h>    // Interaction with the operating system
 #include <ctime>       // Get system clock for Primary seed of rand
 #include <fstream>     // Interaction with file
 #include <conio.h>
+#include <vector>
 #include<windows.h>    // for windows
 //#include<unistd.h>   // for linux 
 
@@ -49,7 +49,6 @@ authors:
 #define Underline   "\u001b[4m"
 #define Reversed    "\u001b[7m"
 
-
 // arrow ascii codes
 #define UP 72
 #define DOWN 80
@@ -63,8 +62,8 @@ enum condition
 {
     Null,
     Enemy,
-    SpaceShip, 
-    bullets
+    SpaceShip,
+    Bullet
 };
 
 /// structs
@@ -74,6 +73,10 @@ struct enemyStruct
     char c = '*';// enemy default character
     size_t size;// enemy size in map
     size_t heal; // enemy's health
+    bool exist = false;
+    unsigned int y; // row of the enemy
+    unsigned int x;// column of enemy
+    
 };
 
 struct spaceShipStruct
@@ -81,22 +84,25 @@ struct spaceShipStruct
     char c = '#';// space ship default charater
     size_t heal = 3;// space ship's health
     unsigned int x;// condition of the spaceship
-};
-
-struct grandStruct
-{
-    unsigned int size;
-    enemyStruct enemy;
-    spaceShipStruct spaceShip;
-    condition **map;
+    unsigned int point = 0;// 
 };
 
 struct bullets
 {
-    int x;// row of the bollets
     int y;// column of the bollets
+    int x;// row of the bollets
     char c = '^';// shot default character
 };
+
+struct grandStruct
+{
+    unsigned int size;// size of grand
+    enemyStruct enemy;// 
+    spaceShipStruct spaceShip;
+    bullets bullet;
+    condition **map;
+};
+
 
 /// function declaration
 // Preliminary function
@@ -106,34 +112,74 @@ void newGame(grandStruct &grand);
 // drawing grand functions
 void horizontalLineDraw(size_t);
 void grandDraw(grandStruct &grand);
-
 // move and shoot functions
 void move(grandStruct &grand);
 void shoot(grandStruct &grand);
-
 //menu functions
 void menu(grandStruct &grand);
-void gameSetting();
+void gameSetting(grandStruct &grand);
 
 /// main function
-int main() 
+int main()
 {
     srand(time(NULL));
     grandStruct grand;
+    grand.enemy.exist = false;
     enemyStruct typesOfEnemys[4] =
     {
-        {"Dart" , '*' , 1 , 1},
-        {"Striker" ,'*' , 2 ,2},
-        {"Wraith", '*' , 3 , 4},
-        {"Banshee", '*' , 4 , 6},
+        {"Dart", '*', 1, 1, false , 0, 0},
+        {"Striker", '*', 2, 2, false, 0, 0},
+        {"Wraith", '*', 3, 4, false, 0, 0},
+        {"Banshee", '*', 4, 6, false, 0, 0},
     };
     menu(grand);
     while (grand.spaceShip.heal > 0)
     {
+        if (grand.enemy.exist == false)
+        {
+            grand.enemy = typesOfEnemys[rand()%4];
+            grand.enemy.y = rand() % (grand.size - (grand.enemy.size - 1));
+            for (int i = grand.enemy.size - 1; i <= 0; i++)
+            {
+                for (int j = grand.enemy.y; j < grand.enemy.y + grand.enemy.size; j++)
+                {
+                    if (i >= 0)
+                    {
+                        grand.map[i][j] = Enemy;
+                    }
+                }
+            }
+            grand.enemy.exist = true;
+        }
         grandDraw(grand);
         move(grand);
+        grand.enemy.x++;
+        for (int i = grand.enemy.x - (grand.enemy.size - 1); i <= grand.enemy.x; i++)
+        {
+            for (int j = grand.enemy.y; j < grand.enemy.y + grand.enemy.size  ; j++)
+            {
+                if (i >= 0)
+                {
+                    grand.map[i][j] = Enemy;
+                }
+                if (i - 1 >= 0)
+                {
+                    grand.map[i - 1][j] = Null;
+                }
+            }
+        }
         save(grand);
     }
+    for (size_t i = 0; i < grand.size - 3; i++)
+    {
+        cout << Red << "/\\" << Reset;
+    }
+    cout << "Game Over";
+    for (size_t i = 0; i < grand.size - 3; i++)
+    {
+        cout << Red << "/\\" << Reset;
+    }
+    cout << endl;
 	system("pause");
     return 0;
 }
@@ -154,10 +200,13 @@ bool save(grandStruct &grand)
 bool load(grandStruct &grand)
 {
     unsigned int mapSize;
-    fstream loadFile("SaveFile.bin", ios::binary | ios::in);
-    loadFile.read((char *) &mapSize , sizeof(unsigned int));
-    loadFile.close();
-    grand.map = new condition*[mapSize];
+    fstream loadFile;
+    loadFile.open("SaveFile.bin", ios::binary | ios::in);
+    if(loadFile)
+    {
+        loadFile.read((char *) &mapSize , sizeof(unsigned int));
+        loadFile.close();
+        grand.map = new condition*[mapSize];
         for (size_t i = 0; i < mapSize ; i++)
         {
             grand.map[i] = new condition[mapSize];
@@ -169,16 +218,20 @@ bool load(grandStruct &grand)
                 grand.map[i][j] = Null;
             }
         }
-    loadFile.open("SaveFile.bin", ios::binary | ios::in);
-
-    unsigned int sizeOfStruct = sizeof(unsigned int)+sizeof(enemyStruct)+sizeof(spaceShipStruct)+(sizeof(condition));
-    if(loadFile.read((char *) &grand , sizeOfStruct))
-    {
-    	return true;
-	}
+        loadFile.open("SaveFile.bin", ios::binary | ios::in);
+        unsigned int sizeOfStruct = sizeof(unsigned int)+sizeof(enemyStruct)+sizeof(spaceShipStruct)+(sizeof(condition));
+        if(loadFile.read((char *) &grand, sizeOfStruct))
+        {
+        	return true;
+	    }
+        else
+            return false;
+    }
     else
-        return false;
-
+    {
+        newGame(grand);
+    }
+    return false;
 }
 
 void menu(grandStruct &grand)
@@ -189,33 +242,27 @@ void menu(grandStruct &grand)
     {
         system("cls");
         cout << Green << "========= Menu =========" << Reset << endl;
-        switch (choice)
-        {
-        case 1:
-            cout << Bold << Black <<  BackgroundGreen << "Continue Game" << Reset << endl;
-            cout << "New Game" << Reset << endl;
-            cout << "Game Settings" << Reset << endl;
-            cout << "Quit Game" << Reset << endl;
-            break;
-        case 2:
-            cout << "Continue Game" << Reset << endl;
-            cout << Bold << Black << BackgroundGreen << "New Game" << Reset << endl;
-            cout << "Game Settings" << Reset << endl;
-            cout << "Quit Game" << Reset << endl;
-            break;
-        case 3:
-            cout << "Continue Game" << Reset << endl;
-            cout << "New Game" << Reset << endl;
-            cout << Bold << Black <<  BackgroundGreen << "Game Settings" << Reset << endl;
-            cout << "Quit Game" << Reset << endl;
-            break;
-        case 4:
-            cout << "Continue Game" << Reset << endl;
-            cout << "New Game" << Reset << endl;
-            cout << "Game Settings" << Reset << endl;
-            cout << Bold << Black <<  BackgroundGreen << "Quit Game" << Reset << endl;
-            break;
-        }
+        if (choice == 1)
+            cout << "->" << Bold << Green;
+        else
+            cout << "  ";
+        cout << "Continue Game" << Reset << endl;
+        if (choice == 2)
+            cout << "->" << Bold << Green;
+        else
+            cout << "  ";
+        cout << "New Game" << Reset << endl;
+        if (choice == 3)
+            cout << "->" << Bold << Green;
+        else
+            cout << "  ";
+            
+        cout << "Game Settings" << Reset << endl;
+        if (choice == 4)
+            cout << "->" << Bold << Green;
+        else
+            cout << "  ";
+        cout << "Quit Game" << Reset << endl;
         cout << Green << "========================" << Reset << endl;
         marker = getch();
 
@@ -248,7 +295,7 @@ void menu(grandStruct &grand)
                 break;
             case 3:
                 system("cls");
-                gameSetting();
+                gameSetting(grand);
                 break;
             case 4:
                 system("cls");
@@ -263,13 +310,22 @@ void menu(grandStruct &grand)
 
 void newGame(grandStruct &grand)
 {
+    try
+    {
+        remove("SaveFile.bin");
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
     bool flag = false;
     grand.map = NULL;
+    grand.enemy.exist = false;
     system("cls");
     do
     {
         cout << BoldRed << "New Game" << Reset << endl;
-        cout << "Please enter the map grand size you want:";
+        cout << "Please enter the map grand size you want: ";
         cin >> grand.size;
         if (grand.size < 15)
         {
@@ -305,7 +361,7 @@ void newGame(grandStruct &grand)
     grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
 }
 
-void gameSetting()
+void gameSetting(grandStruct &grand)
 {
     unsigned int marker = 1;
     bool menuSelected = false;
@@ -317,15 +373,21 @@ void gameSetting()
 
       
         if (marker == 1)
-            cout << Bold << Black <<  BackgroundGreen;
+            cout<< "->" << Bold << Green;
+        else
+            cout << "  ";
         cout << "Change Spaceship Character" << Reset << endl;
 
         if (marker == 2)
-            cout << Bold << Black <<  BackgroundGreen;
+            cout << "->" << Bold << Green;
+        else
+            cout << "  ";
         cout << "Change Enemy Character" << Reset << endl;
 
         if (marker == 3)
-            cout << Bold << Black <<  BackgroundGreen;
+            cout << "->" << Bold << Green;
+        else
+            cout << "  ";
         cout << "Return to Main Menu" << Reset << endl;
 
        
@@ -347,14 +409,17 @@ void gameSetting()
         case 13:  
             if (marker == 1)
             {
-               
+                system("cls");
                 cout << "Enter new character for Spaceship: ";
-               
+                cin >> grand.spaceShip.c;
+                system("cls");           
             }
             else if (marker == 2)
             {
+                system("cls");
                 cout << "Enter new character for Enemy: ";
-               
+                cin >> grand.enemy.c;
+                system("cls");
             }
             else if (marker == 3)
             {
@@ -374,12 +439,24 @@ void horizontalLineDraw(size_t size)
             cout << "-";
         }
     }
+    cout << '-';
     cout << endl;
 }
 
 void grandDraw(grandStruct &grand)
 {
     system("cls");
+    for (size_t i = 0; i < grand.size - 3; i++)
+    {
+        cout << Blue << "/\\" << Reset;
+    }
+    cout << "Final Fight";
+    for (size_t i = 0; i < grand.size - 3; i++)
+    {
+        cout << Blue << "/\\" << Reset;
+    }
+    cout << endl;
+    
     cout << "heal = " << Red << grand.spaceShip.heal << Reset << endl;
     for (size_t i = 0; i < grand.size; i++)
     {
@@ -428,7 +505,7 @@ void move(grandStruct &grand)
                 grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
             }   
             flag = true;
-        //    shoot(grand);
+            shoot(grand);
             break;
         case LEFT:
             if (grand.spaceShip.x > 0)
@@ -443,7 +520,7 @@ void move(grandStruct &grand)
                 grand.spaceShip.x = (grand.size - 1);
                 grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
             }
-//            shoot(grand);
+            shoot(grand);
             flag = true;
             break;
         case DOWN:
@@ -462,57 +539,50 @@ void move(grandStruct &grand)
 
 void shoot(grandStruct &grand)
 {
-    bullets bullet;
-    bullet.x = grand.spaceShip.x;
-    bullet.y = grand.spaceShip.y;
-
-    while (true)
+ 
+    bullets newBullet;
+    
+ 
+    newBullet.y = grand.spaceShip.x - 1;
+    newBullet.x = grand.spaceShip.x;
+    
+  
+    grand.map[newBullet.y][newBullet.x] = Bullet;
+    
+    while (newBullet.y > 0)
     {
-        // Clear previous position of the bullet
-        grand.map[bullet.x][bullet.y] = Null;
-
-        // Move the bullet upwards
-        bullet.x--;
-
-        // Check if the bullet hits an enemy
-        if (grand.map[bullet.x][bullet.y] == Enemy)
+  
+        grand.map[newBullet.y][newBullet.x] = Null;
+        
+      
+        newBullet.y--;
+        
+     
+        grand.map[newBullet.y][newBullet.x] = Bullet;
+        
+      
+        if (grand.map[newBullet.y][newBullet.x] == Enemy)
         {
-            // Decrease enemy's health
+          
             grand.enemy.heal--;
-
-            // Check if the enemy is destroyed
-            if (grand.enemy.heal <= 0)
+            
+        
+            if (grand.enemy.heal == 0)
             {
-                // Remove enemy from the map
-                for (size_t i = 0; i < grand.size; i++)
-                {
-                    for (size_t j = 0; j < grand.size; j++)
-                    {
-                        if (grand.map[i][j] == Enemy)
-                            grand.map[i][j] = Null;
-                    }
-                }
+                grand.map[newBullet.y][newBullet.x] = Null;
+                grand.enemy.exist = false;
             }
-
-            // Clear bullet position
-            grand.map[bullet.x][bullet.y] = Null;
-
-            // Exit the shooting loop
+            
+          
+            grand.map[newBullet.y][newBullet.x] = Null;
+            
+          
+            grand.spaceShip.point++;
+            
+          
             break;
         }
-
-        // Check if the bullet reaches the top of the map
-        if (bullet.x == 0)
-        {
-            // Clear bullet position
-            grand.map[bullet.x][bullet.y] = Null;
-
-            // Exit the shooting loop
-            break;
-        }
-
-        grand.map[bullet.x][bullet.y] = bullet;
-
-        Sleep(100);
+       
+        Sleep(10);
     }
 }
