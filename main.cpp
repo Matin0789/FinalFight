@@ -74,15 +74,15 @@ struct enemyStruct
     size_t size;// enemy size in map
     size_t heal; // enemy's health
     bool exist = false;
-    unsigned int x; // row of the enemy
-    unsigned int y;// column of enemy
+    unsigned int y; // row of the enemy
+    unsigned int x;// column of enemy
 };
 
 struct spaceShipStruct
 {
     char c = '#';// space ship default charater
     size_t heal = 3;// space ship's health
-    unsigned int y;// condition of the spaceship
+    unsigned int x;// condition of the spaceship
     unsigned int point = 0;// 
 };
 
@@ -98,7 +98,6 @@ struct grandStruct
     unsigned int size;// size of grand
     enemyStruct enemy;// 
     spaceShipStruct spaceShip;
-    bullets bullet;
     condition **map;
     vector<bullets> bullet;
 };
@@ -108,7 +107,7 @@ struct grandStruct
 // Preliminary function
 bool save(grandStruct &grand);
 bool load(grandStruct &grand);
-void newGame(grandStruct *grand);
+void newGame(grandStruct &grand);
 // drawing grand functions
 void horizontalLineDraw(size_t);
 void grandDraw(grandStruct &grand);
@@ -138,10 +137,11 @@ int main()
         if (grand.enemy.exist == false)
         {
             grand.enemy = typesOfEnemys[rand()%4];
+            grand.enemy.y = 0;
             grand.enemy.x = rand() % (grand.size - (grand.enemy.size - 1));
-            for (int i = grand.enemy.x; i < grand.enemy.size + grand.enemy.x; i++)
+            for (int i = grand.enemy.y; i < grand.enemy.size + grand.enemy.y; i++)
             {
-                for (int j = grand.enemy.y - (grand.enemy.size); j < grand.enemy.y; j++)
+                for (int j = grand.enemy.x - (grand.enemy.size); j < grand.enemy.x; j++)
                 {
                     if (j > 0)
                     {
@@ -153,20 +153,20 @@ int main()
         }
         grandDraw(grand);
         move(grand);
-        grand.enemy.y++;
-        for (int i = grand.enemy.x; i < grand.enemy.x + grand.enemy.size  ; i++)
+        grand.enemy.x++;
+        for (int i = grand.enemy.y; i < grand.enemy.y + grand.enemy.size  ; i++)
         {
-            for (int j = grand.enemy.y - (grand.enemy.size); j < grand.enemy.y; j++)
+            for (int j = grand.enemy.x - (grand.enemy.size); j < grand.enemy.x; j++)
             {
                 if (j - 1 >= 0)
                 {
-                    grand.map[j - 1][i] = Null;
+                    grand.map[j-1][i] = Null;
                 }
             }
         }
-        for (int i = grand.enemy.x; i < grand.enemy.x + grand.enemy.size  ; i++)
+        for (int i = grand.enemy.y; i < grand.enemy.y + grand.enemy.size  ; i++)
         {
-            for (int j = grand.enemy.y - (grand.enemy.size); j < grand.enemy.y; j++)
+            for (int j = grand.enemy.x - (grand.enemy.size); j < grand.enemy.x; j++)
             {
                 if (j >= 0)
                 {
@@ -240,7 +240,7 @@ bool load(grandStruct &grand)
     }
     else
     {
-        newGame(&grand);
+        newGame(grand);
     }
     return false;
 }
@@ -301,7 +301,7 @@ void menu(grandStruct &grand)
                 return ;
                 break;
             case 2:
-                newGame(&grand);
+                newGame(grand);
                 return ;
                 break;
             case 3:
@@ -319,7 +319,7 @@ void menu(grandStruct &grand)
     } while (true);
 }
 
-void newGame(grandStruct *grand)
+void newGame(grandStruct &grand)
 {
     try
     {
@@ -330,15 +330,21 @@ void newGame(grandStruct *grand)
         std::cerr << e.what() << '\n';
     }
     bool flag = false;
-    delete[] grand -> map;
-    grand->enemy.exist = false;
+    for (size_t i = 0; i < grand.size; i++)
+    {
+        for (size_t j = 0; j < grand.size; j++)
+        {
+            grand.map[i][j] = Null;
+        }
+    }
+    grand.enemy.exist = false;
     system("cls");
     do
     {
         cout << BoldRed << "New Game" << Reset << endl;
         cout << "Please enter the map grand size you want: ";
-        cin >> grand->size;
-        if (grand->size < 15)
+        cin >> grand.size;
+        if (grand.size < 15)
         {
             system("cls");
             cout << "Undefiend!!"<< endl << "map grand size cannot be less than 15" << endl <<"please try again" << endl;
@@ -350,26 +356,26 @@ void newGame(grandStruct *grand)
             flag = true;
         }
     } while (flag == false);
-    if (grand->size%2 == 0)
+    if (grand.size%2 == 0)
     {
-        cout << "The map size cannot be even play start in grand size " << grand->size - 1 << endl;
-        grand->size--;
+        cout << "The map size cannot be even play start in grand size " << grand.size - 1 << endl;
+        grand.size--;
         Sleep(5);
     }
-    grand->map = new condition*[grand->size];
-    for (size_t i = 0; i < grand->size ; i++)
+    grand.map = new condition*[grand.size];
+    for (size_t i = 0; i < grand.size ; i++)
     {
-        grand->map[i] = new condition[grand->size];
+        grand.map[i] = new condition[grand.size];
     }
-    for (size_t i = 0; i < grand->size; i++)
+    for (size_t i = 0; i < grand.size; i++)
     {
-        for (size_t j = 0; j < grand->size; j++)
+        for (size_t j = 0; j < grand.size; j++)
         {
-            grand->map[i][j] = Null;
+            grand.map[i][j] = Null;
         }
     }
-    grand->spaceShip.y = ((grand->size - 1)/2);
-    grand->map[grand->size - 1][grand->spaceShip.y] = SpaceShip;
+    grand.spaceShip.x = ((grand.size - 1)/2);
+    grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
 }
 
 void gameSetting(grandStruct &grand)
@@ -502,33 +508,33 @@ void move(grandStruct &grand)
         switch (getch())
         {
         case RIGHT:
-            if (grand.spaceShip.y < grand.size - 1)
+            if (grand.spaceShip.x < grand.size - 1)
             {
-                grand.map[grand.size - 1][grand.spaceShip.y] = Null;
-                grand.spaceShip.y += 1;
-                grand.map[grand.size - 1][grand.spaceShip.y] = SpaceShip;
+                grand.map[grand.size - 1][grand.spaceShip.x] = Null;
+                grand.spaceShip.x += 1;
+                grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
             }
             else
             {
-                grand.map[grand.size - 1][grand.spaceShip.y] = Null;
-                grand.spaceShip.y = 0;
-                grand.map[grand.size - 1][grand.spaceShip.y] = SpaceShip;
+                grand.map[grand.size - 1][grand.spaceShip.x] = Null;
+                grand.spaceShip.x = 0;
+                grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
             }
             flag = true;
             shoot(grand);
             break;
         case LEFT:
-            if (grand.spaceShip.y > 0)
+            if (grand.spaceShip.x > 0)
             {
-                grand.map[grand.size - 1][grand.spaceShip.y] = Null;
-                grand.spaceShip.y -= 1;
-                grand.map[grand.size - 1][grand.spaceShip.y] = SpaceShip;
+                grand.map[grand.size - 1][grand.spaceShip.x] = Null;
+                grand.spaceShip.x -= 1;
+                grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
             }
             else
             {
-                grand.map[grand.size - 1][grand.spaceShip.y] = Null;
-                grand.spaceShip.y = (grand.size - 1);
-                grand.map[grand.size - 1][grand.spaceShip.y] = SpaceShip;
+                grand.map[grand.size - 1][grand.spaceShip.x] = Null;
+                grand.spaceShip.x = (grand.size - 1);
+                grand.map[grand.size - 1][grand.spaceShip.x] = SpaceShip;
             }
             shoot(grand);
             flag = true;
@@ -554,25 +560,25 @@ void shoot(grandStruct &grand)
     bullets newBullet;
     
  
-    newBullet.y = grand.spaceShip.x - 1;
+    newBullet.x = grand.spaceShip.x - 1;
     newBullet.x = grand.spaceShip.x;
     
   
-    grand.map[newBullet.y][newBullet.x] = Bullet;
+    grand.map[newBullet.x][newBullet.x] = Bullet;
     
-    while (newBullet.y > 0)
+    while (newBullet.x > 0)
     {
   
-        grand.map[newBullet.y][newBullet.x] = Null;
+        grand.map[newBullet.x][newBullet.x] = Null;
         
       
-        newBullet.y--;
+        newBullet.x--;
         
      
-        grand.map[newBullet.y][newBullet.x] = Bullet;
+        grand.map[newBullet.x][newBullet.x] = Bullet;
         
       
-        if (grand.map[newBullet.y][newBullet.x] == Enemy)
+        if (grand.map[newBullet.x][newBullet.x] == Enemy)
         {
           
             grand.enemy.heal--;
@@ -580,12 +586,12 @@ void shoot(grandStruct &grand)
         
             if (grand.enemy.heal == 0)
             {
-                grand.map[newBullet.y][newBullet.x] = Null;
+                grand.map[newBullet.x][newBullet.x] = Null;
                 grand.enemy.exist = false;
             }
             
           
-            grand.map[newBullet.y][newBullet.x] = Null;
+            grand.map[newBullet.x][newBullet.x] = Null;
             
           
             grand.spaceShip.point++;
