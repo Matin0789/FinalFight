@@ -98,6 +98,7 @@ struct grandStruct
     unsigned int size;// size of grand
     enemyStruct enemy;// 
     spaceShipStruct spaceShip;
+    bullets bullet;
     condition **map;
     vector<bullets> bullet;
 };
@@ -549,4 +550,50 @@ void move(grandStruct &grand)
 void shoot(grandStruct &grand)
 {
 
+ 
+    bullets newBullet;
+    
+ 
+    newBullet.y = grand.spaceShip.x - 1;
+    newBullet.x = grand.spaceShip.x;
+    
+  
+    grand.map[newBullet.y][newBullet.x] = Bullet;
+    
+    while (newBullet.y > 0)
+    {
+  
+        grand.map[newBullet.y][newBullet.x] = Null;
+        
+      
+        newBullet.y--;
+        
+     
+        grand.map[newBullet.y][newBullet.x] = Bullet;
+        
+      
+        if (grand.map[newBullet.y][newBullet.x] == Enemy)
+        {
+          
+            grand.enemy.heal--;
+            
+        
+            if (grand.enemy.heal == 0)
+            {
+                grand.map[newBullet.y][newBullet.x] = Null;
+                grand.enemy.exist = false;
+            }
+            
+          
+            grand.map[newBullet.y][newBullet.x] = Null;
+            
+          
+            grand.spaceShip.point++;
+            
+          
+            break;
+        }
+       
+        Sleep(10);
+    }
 }
