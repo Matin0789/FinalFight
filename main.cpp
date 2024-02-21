@@ -139,41 +139,42 @@ int main()
             grand.enemy = typesOfEnemys[rand()%4];
             grand.enemy.y = 0;
             grand.enemy.x = rand() % (grand.size - (grand.enemy.size - 1));
-            for (int i = grand.enemy.y; i < grand.enemy.size + grand.enemy.y; i++)
+            grand.enemy.exist = true;
+            for (size_t i = grand.enemy.x; i < grand.enemy.size + grand.enemy.x; i++)
             {
-                for (int j = grand.enemy.x - (grand.enemy.size); j < grand.enemy.x; j++)
+                for (size_t j = grand.enemy.y; j < grand.enemy.y + grand.enemy.size; j++)
                 {
-                    if (j > 0)
+                    if (j >= 0 && i >= 0)
                     {
                         grand.map[j][i] = Enemy;
                     }
                 }
             }
-            grand.enemy.exist = true;
         }
         grandDraw(grand);
         move(grand);
-        grand.enemy.x++;
-        for (int i = grand.enemy.y; i < grand.enemy.y + grand.enemy.size  ; i++)
+        grand.enemy.y++;
+        for (size_t i = grand.enemy.x; i < grand.enemy.size + grand.enemy.x; i++)
         {
-            for (int j = grand.enemy.x - (grand.enemy.size); j < grand.enemy.x; j++)
+            for (size_t j = grand.enemy.y; j < grand.enemy.y + grand.enemy.size; j++)
             {
-                if (j - 1 >= 0)
+                if (j - 1 >= 0 && i >= 0)
                 {
-                    grand.map[j-1][i] = Null;
+                    grand.map[j - 1][i] = Null;
                 }
             }
         }
-        for (int i = grand.enemy.y; i < grand.enemy.y + grand.enemy.size  ; i++)
+        for (size_t i = grand.enemy.x; i < grand.enemy.size + grand.enemy.x; i++)
         {
-            for (int j = grand.enemy.x - (grand.enemy.size); j < grand.enemy.x; j++)
+            for (size_t j = grand.enemy.y; j < grand.enemy.y + grand.enemy.size; j++)
             {
-                if (j >= 0)
+                if (j >= 0 && i >= 0)
                 {
                     grand.map[j][i] = Enemy;
                 }
             }
         }
+
         save(grand);
     }
     for (size_t i = 0; i < grand.size - 3; i++)
@@ -486,8 +487,10 @@ void grandDraw(grandStruct &grand)
                 cout << ' ' << grand.enemy.c << ' ';
                 break;
             case SpaceShip:
-	
                 cout << ' ' << grand.spaceShip.c << ' ';
+                break;
+            case Bullet:
+                cout << ' ' << grand.bullet[0].c << ' ';
                 break;
             default:
                 cout << "   ";
@@ -555,49 +558,5 @@ void move(grandStruct &grand)
 
 void shoot(grandStruct &grand)
 {
-
- 
-    bullets newBullet;
     
-    newBullet.x = grand.spaceShip.x;
-    newBullet.y = grand.size - 2;
-
-    grand.map[newBullet.x][newBullet.y] = Bullet;
-    
-    while (newBullet.y > 0)
-    {
-  
-        grand.map[newBullet.x][newBullet.y] = Null;
-        
-      
-        newBullet.y--;
-        
-     
-        grand.map[newBullet.x][newBullet.y] = Bullet;
-        
-      
-        /*if (grand.map[newBullet.x][newBullet.y] == Enemy)
-        {
-          
-            grand.enemy.heal--;
-            
-        
-            if (grand.enemy.heal == 0)
-            {
-                grand.map[newBullet.x][newBullet.x] = Null;
-                grand.enemy.exist = false;
-            }
-            
-          
-            grand.map[newBullet.x][newBullet.x] = Null;
-            
-          
-            grand.spaceShip.point++;
-            
-          
-            break;
-        }*/
-       
-        Sleep(10);
-    }
 }
