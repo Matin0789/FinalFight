@@ -559,26 +559,24 @@ void shoot(grandStruct &grand)
  
     bullets newBullet;
     
- 
-    newBullet.x = grand.spaceShip.x - 1;
     newBullet.x = grand.spaceShip.x;
+    newBullet.y = grand.size - 2;
+
+    grand.map[newBullet.x][newBullet.y] = Bullet;
     
-  
-    grand.map[newBullet.x][newBullet.x] = Bullet;
-    
-    while (newBullet.x > 0)
+    while (newBullet.y > 0)
     {
   
-        grand.map[newBullet.x][newBullet.x] = Null;
+        grand.map[newBullet.x][newBullet.y] = Null;
         
       
-        newBullet.x--;
+        newBullet.y--;
         
      
-        grand.map[newBullet.x][newBullet.x] = Bullet;
+        grand.map[newBullet.x][newBullet.y] = Bullet;
         
       
-        if (grand.map[newBullet.x][newBullet.x] == Enemy)
+        /*if (grand.map[newBullet.x][newBullet.y] == Enemy)
         {
           
             grand.enemy.heal--;
@@ -598,7 +596,7 @@ void shoot(grandStruct &grand)
             
           
             break;
-        }
+        }*/
        
         Sleep(10);
     }
