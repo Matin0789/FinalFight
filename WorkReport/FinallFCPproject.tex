@@ -49,12 +49,33 @@
 	\subsection{fstream}
 	\subsection{vector}
 	
+
 	\section{Defines}\label{description.defines}
 	In this code, we have used defines for colors such as blue, green, black, etc., to color and also to bold our output text, whose ascii codes we have obtained by searching the internet, which of course We also used it in the mini project and we have also put 4 defines for the keys of our game in the code.
 	\section{Structures}\label{description.structs}
 	We have used an enum and three structures in this code
 	\section{Functions}\label{description.func}
+	Our code functions are as follows
+	\subsection{main}
+	This function is actually our main function, and first it calls the menu function, then it checks the condition of the heal of the ship, whether the heal of the spaceship is more than 0 or not.
+Another task of this function is to print the checkerboard of the game, which calls the grandDraw function
+Then it does the work of moving the enemies and the spaceship and saving the game information.
 	
+	\subsection{granddraw}
+	This function has the task of printing the game page, if we select newGame in the menu, it first takes a number from the user and prints the number of rows and columns equal to that number.
+At the top of the game page, we have the name of the game, Final Fight, and the heal ship, in this function, we call the horizontalLineDraw function to print the lines.
+	\subsection{horizontalLineDraw}
+	\subsection{menu}
+	Our menu function, what it displays, consists of four sections, which we first use a do while loop to display once, and then according to the definitions at the top of the code using the ascii code, the up and down buttons and left
+	and we have defined correctly, we can choose the options, by selecting any of the options, we will enter the switch and case section of this function, each of which applies commands
+	
+	\subsection{newGame}
+	\subsection{gameSetting}
+	\subsection{move}
+	\subsection{shoot}
+	\subsection{save}
+	\subsection{load}
+
 	\newpage
 	\setcounter{section}{0}
 	\part{links and references}\label{linkAndRef}
