@@ -11,7 +11,7 @@ authors:
 #include <ctime>       // Get system clock for Primary seed of rand
 #include <fstream>     // Interaction with file
 #include <conio.h>
-#include <list>
+#include <vector>
 #include<windows.h>    // for windows
 //#include<unistd.h>   // for linux 
 
@@ -99,7 +99,7 @@ struct grandStruct
     enemyStruct enemy;// 
     spaceShipStruct spaceShip;
     condition **map;
-    list<bullets> bullet;
+    vector<bullets> bullet;
 };
 
 
@@ -146,27 +146,27 @@ int main()
                     if (j >= 0)
                         grand.map[j][i] = Enemy;
         }
-        for (auto &&i : grand.bullet)
+        /*for (int i = 0;i < grand.bullet.size(); i++)
         {
-            if (grand.map[i.y - 1][i.x] == Enemy)
+            if (grand.map[grand.bullet[i].y - 1][grand.bullet[i].x] == Enemy)
             {
-                grand.bullet.remove(i);
+                grand.bullet.erase(grand.bullet.begin() + i);
                 grand.enemy.heal--;
             }
-            grand.map[i.y][i.x] = Null;
-            if (i.y == 0)
+            grand.map[grand.bullet[i].y][grand.bullet[i].x] = Null;
+            if (grand.bullet[i].y == 0)
             {
-                grand.bullet.pop_front();
+                grand.bullet.erase(grand.bullet.begin());
                 continue;
             }
-            i.y--;
-            grand.map[i.y][i.x] = Bullet;
-        }
+            grand.bullet[i].y--;
+            grand.map[grand.bullet[i].y][grand.bullet[i].x] = Bullet;
+        }*/
         move(grand);
-        grand.enemy.y++;
+        /*grand.enemy.y++;
         for (size_t i = grand.enemy.x; i < grand.enemy.size + grand.enemy.x; i++)
             for (size_t j = grand.enemy.y; j < grand.enemy.y + grand.enemy.size; j++)
-                if (j - 1 >= 0)  
+                if (j - 1 >= 0)
                     grand.map[j - 1][i] = Null;
         if (grand.enemy.y < grand.size - 1)
             for (size_t i = grand.enemy.x; i < grand.enemy.size + grand.enemy.x; i++)
@@ -178,7 +178,7 @@ int main()
             grand.enemy.y = 0;
             grand.spaceShip.heal--;
             grand.enemy.exist = false;
-        }
+        }*/
         save(grand);
     }
     for (size_t i = 0; i < grand.size - 3; i++)
@@ -343,7 +343,7 @@ void newGame(grandStruct &grand)
     {
         cout << "The map size cannot be even play start in grand size " << grand.size - 1 << endl;
         grand.size--;
-        Sleep(5);
+        Sleep(10);
     }
     grand.map = new condition*[grand.size];
     for (size_t i = 0; i < grand.size ; i++)
