@@ -134,7 +134,10 @@ int main()
     menu(grand);
     while (grand.spaceShip.heal > 0)
     {
-        grandDraw(grand);
+        if(grand.enemy.heal == 0)
+        {
+            grand.enemy.exist = false;
+        }
         if (grand.enemy.exist == false)
         {
             grand.enemy = typesOfEnemys[rand()%4];
@@ -146,39 +149,19 @@ int main()
                     if (j >= 0)
                         grand.map[j][i] = Enemy;
         }
-        /*for (int i = 0;i < grand.bullet.size(); i++)
+        for (size_t i = 0; i < grand.bullet.size(); i++)
         {
-            if (grand.map[grand.bullet[i].y - 1][grand.bullet[i].x] == Enemy)
-            {
-                grand.bullet.erase(grand.bullet.begin() + i);
-                grand.enemy.heal--;
-            }
-            grand.map[grand.bullet[i].y][grand.bullet[i].x] = Null;
             if (grand.bullet[i].y == 0)
             {
-                grand.bullet.erase(grand.bullet.begin());
-                continue;
+                grand.bullet.erase(grand.bullet.begin() + i);
             }
-            grand.bullet[i].y--;
-            grand.map[grand.bullet[i].y][grand.bullet[i].x] = Bullet;
-        }*/
+            if (grand.map[grand.bullet[i].y - 1][grand.bullet[i].x] == Enemy)
+            {
+                grand.enemy.heal--;
+            }
+        }
         move(grand);
-        /*grand.enemy.y++;
-        for (size_t i = grand.enemy.x; i < grand.enemy.size + grand.enemy.x; i++)
-            for (size_t j = grand.enemy.y; j < grand.enemy.y + grand.enemy.size; j++)
-                if (j - 1 >= 0)
-                    grand.map[j - 1][i] = Null;
-        if (grand.enemy.y < grand.size - 1)
-            for (size_t i = grand.enemy.x; i < grand.enemy.size + grand.enemy.x; i++)
-                for (size_t j = grand.enemy.y; j < grand.enemy.y + grand.enemy.size; j++)
-                    if (j >= 0 && j < grand.size)
-                        grand.map[j][i] = Enemy;
-        else
-        {
-            grand.enemy.y = 0;
-            grand.spaceShip.heal--;
-            grand.enemy.exist = false;
-        }*/
+        grandDraw(grand);
         save(grand);
     }
     for (size_t i = 0; i < grand.size - 3; i++)
