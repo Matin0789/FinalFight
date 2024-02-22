@@ -96,6 +96,7 @@ struct bullets
 struct grandStruct
 {
     unsigned int size;// size of grand
+    unsigned int endPoint = 0;
     enemyStruct enemy;// 
     spaceShipStruct spaceShip;
     condition **map;
@@ -132,7 +133,7 @@ int main()
         {"Banshee", '*', 4, 6, false, 0, 0},
     };
     menu(grand);
-    while (grand.spaceShip.heal > 0)
+    while (grand.spaceShip.heal > 0 && grand.spaceShip.point < grand.endPoint)
     {
         if(grand.enemy.heal == 0)
         {
@@ -149,26 +150,66 @@ int main()
                     if (j >= 0)
                         grand.map[j][i] = Enemy;
         }
+        grandDraw(grand);
         for (size_t i = 0; i < grand.bullet.size(); i++)
         {
             if (grand.bullet[i].y == 0)
             {
+                grand.map[grand.bullet[i].y][grand.bullet[i].x] = Null;
                 grand.bullet.erase(grand.bullet.begin() + i);
             }
             if (grand.map[grand.bullet[i].y - 1][grand.bullet[i].x] == Enemy)
             {
+                grand.map[grand.bullet[i].y][grand.bullet[i].x] = Null;
+                grand.bullet.erase(grand.bullet.begin() + i);
                 grand.enemy.heal--;
             }
+            grand.map[grand.bullet[i].y][grand.bullet[i].x] = Null;
+            grand.bullet[i].y--;
+            grand.map[grand.bullet[i].y][grand.bullet[i].x] = Bullet;
         }
         move(grand);
-        grandDraw(grand);
+        for (size_t i = grand.enemy.x; i < grand.enemy.x + grand.enemy.size; i++)
+        {
+            for (size_t j = grand.enemy.y; j < grand.enemy.y + grand.enemy.size; j++)
+            {
+                grand.map[j][i] = Null;
+            }
+        }
+        if (grand.enemy.heal == 0)
+        {
+            grand.spaceShip.point += 2 * (grand.enemy.size * grand.enemy.size);
+            grand.enemy.exist = false;
+            save(grand);
+            continue;
+        }
+        if(grand.enemy.y + grand.enemy.size < grand.size)
+        {
+            grand.enemy.y++;
+            for (size_t i = grand.enemy.x; i < grand.enemy.x + grand.enemy.size; i++)
+            {
+                for (size_t j = grand.enemy.y; j < grand.enemy.y + grand.enemy.size; j++)
+                {
+                    grand.map[j][i] = Enemy;
+                }
+            }
+        }
+        else
+        {
+            grand.enemy.exist = false;
+            grand.spaceShip.heal--;
+        }
         save(grand);
     }
+    system("cls");
     for (size_t i = 0; i < grand.size - 3; i++)
-        cout << Red << "/\\" << Reset;
-    cout << "Game Over";
+        cout << Magenta << "/\\" << Reset;
+    if (grand.spaceShip.heal == 0)
+        cout << BoldRed << "Game Over";
+    else
+        cout << BoldGreen << "You Win";
     for (size_t i = 0; i < grand.size - 3; i++)
-        cout << Red << "/\\" << Reset;
+        cout << Magenta << "/\\" << Reset;
     cout << endl;
 	system("pause");
     return 0;
@@ -312,12 +353,14 @@ void newGame(grandStruct &grand)
         cout << BoldRed << "New Game" << Reset << endl;
         cout << "Please enter the map grand size you want: ";
         cin >> grand.size;
+        cout << "Please enter the end point you want: ";
+        cin >> grand.endPoint;
         if (grand.size < 15)
         {
             system("cls");
             cout << "Undefiend!!"<< endl << "map grand size cannot be less than 15" << endl <<"please try again" << endl;
             flag = false;
-            Sleep(5);
+            Sleep(10);
         }
         else
             flag = true;
@@ -424,8 +467,7 @@ void grandDraw(grandStruct &grand)
     for (size_t i = 0; i < grand.size - 3; i++)
         cout << Blue << "/\\" << Reset;
     cout << endl;
-    
-    cout << "heal = " << Red << grand.spaceShip.heal << Reset << endl;
+    cout << "heal = " << Red << grand.spaceShip.heal << Reset << '\t' << "point = " << Red << grand.spaceShip.point << Reset << endl;
     for (size_t i = 0; i < grand.size; i++)
     {
         horizontalLineDraw(grand.size);
@@ -435,13 +477,13 @@ void grandDraw(grandStruct &grand)
             switch (grand.map[i][j])
             {
             case Enemy:
-                cout << ' ' << grand.enemy.c << ' ';
+                cout << Red << ' ' << grand.enemy.c << ' ' << Reset;
                 break;
             case SpaceShip:
-                cout << ' ' << grand.spaceShip.c << ' ';
+                cout << Green << ' ' << grand.spaceShip.c << ' ' << Reset;
                 break;
             case Bullet:
-                cout << ' ' << '^' << ' ';
+                cout << Blue << ' ' << grand.bullet[0].c << ' ' << Reset;
                 break;
             default:
                 cout << "   ";
