@@ -211,6 +211,16 @@ int main()
     for (size_t i = 0; i < grand.size - 3; i++)
         cout << Magenta << "/\\" << Reset;
     cout << endl;
+    try
+    {
+        remove("SaveFile.bin");
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+    
+    
 	system("pause");
     return 0;
 }
@@ -244,7 +254,7 @@ bool load(grandStruct &grand)
             for (size_t j = 0; j < mapSize; j++)
                 grand.map[i][j] = Null;
         loadFile.open("SaveFile.bin", ios::binary | ios::in);
-        unsigned int sizeOfStruct = sizeof(unsigned int)+sizeof(enemyStruct)+sizeof(spaceShipStruct)+(sizeof(condition));
+        unsigned int sizeOfStruct = sizeof(unsigned int)+sizeof(unsigned int)+sizeof(enemyStruct)+sizeof(spaceShipStruct)+(sizeof(condition));
         if(loadFile.read((char *) &grand, sizeOfStruct))
         {
             bullets bullet;
