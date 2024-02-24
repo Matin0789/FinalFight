@@ -189,14 +189,14 @@ int main()
             save(grand);
             continue;
         }
-        if(grand.enemy.y + grand.enemy.size < grand.size)
+        if(grand.enemy.y + grand.enemy.size < grand.size)  // enemys move 
         {
             grand.enemy.y++;
-            for (size_t i = grand.enemy.x; i < grand.enemy.x + grand.enemy.size; i++)
+            for (size_t i = grand.enemy.x; i < grand.enemy.x + grand.enemy.size; i++) // Change the position of x
             {
-                for (size_t j = grand.enemy.y; j < grand.enemy.y + grand.enemy.size; j++)
+                for (size_t j = grand.enemy.y; j < grand.enemy.y + grand.enemy.size; j++)  // Change the position of y
                 {
-                    grand.map[j][i] = Enemy;
+                    grand.map[j][i] = Enemy;  // Write
                 }
             }
         }
@@ -244,23 +244,23 @@ bool save(grandStruct grand)
         return false;         // return false for bool function 
 }
 
-bool load(grandStruct &grand)
+bool load(grandStruct &grand)      // Read the information stored in the file
 {
     grand.bullet.clear();
     unsigned int mapSize;
-    fstream loadFile;
-    loadFile.open("SaveFile.bin", ios::binary | ios::in);
+    fstream loadFile;  
+    loadFile.open("SaveFile.bin", ios::binary | ios::in);  // Read File
     if(loadFile.is_open())
     {
         loadFile.read((char *) &mapSize , sizeof(unsigned int));
-        loadFile.close();
-        grand.map = new condition*[mapSize];
+        loadFile.close();  
+        grand.map = new condition*[mapSize];   // From here on, according to the commands we give to the system, it will print the game page with the last saved conditions.
         for (size_t i = 0; i < mapSize ; i++)
             grand.map[i] = new condition[mapSize];
         for (size_t i = 0; i < mapSize; i++)
             for (size_t j = 0; j < mapSize; j++)
                 grand.map[i][j] = Null;
-        loadFile.open("SaveFile.bin", ios::binary | ios::in);
+        loadFile.open("SaveFile.bin", ios::binary | ios::in); //Saves new changes
         //
         unsigned int size;// size of grand
         unsigned int endPoint = 0; // game end points
@@ -339,7 +339,7 @@ void menu(grandStruct &grand)
             {
             case 1:
                 system("cls");
-                load(grand);    
+                load(grand);     // call the load function for continue game
                 return ;
                 break;
             case 2:
