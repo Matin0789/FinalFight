@@ -260,19 +260,27 @@ bool load(grandStruct &grand)      // Read the information stored in the file
         for (size_t i = 0; i < mapSize; i++)
             for (size_t j = 0; j < mapSize; j++)
                 grand.map[i][j] = Null;
-        loadFile.open("SaveFile.bin", ios::binary | ios::in); //Saves new changes
-        //
+        loadFile.open("SaveFile.bin", ios::binary | ios::in);
+        /*
         unsigned int size;// size of grand
         unsigned int endPoint = 0; // game end points
         enemyStruct enemy;
         spaceShipStruct spaceShip;
         condition **map;
         vector<bullets> bullet;   // bullet 
-        //
+        */
         unsigned int sizeOfStruct = sizeof(unsigned int) + sizeof(unsigned int) + sizeof(enemyStruct) 
-        + sizeof(spaceShipStruct) + (sizeof(condition));
+        + sizeof(spaceShipStruct);
         if(loadFile.read((char *) &grand, sizeOfStruct))
         {
+            for (size_t i = 0; i < mapSize; i++)
+            {
+                for (size_t j = 0; j < mapSize; j++)
+                {
+                   loadFile.read((char *) &grand.map[j][i], sizeof(condition));
+                }
+            }
+            
             bullets bullet;
             while(loadFile.read((char *) &bullet, sizeof(bullets)))
                 grand.bullet.push_back(bullet);
