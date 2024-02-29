@@ -6,7 +6,6 @@ authors:
     Nima makhmali, Student No:40212358035
 The relevant teacher :
     Dr. Bashiri
-     
 */
 
 /// libraries
@@ -59,6 +58,7 @@ The relevant teacher :
 #define LEFT 75
 #define RIGHT 77
 
+/// class name space
 using namespace std;
 
 /// enums       <This is an enumeration for condition>
@@ -136,14 +136,13 @@ int main()
         {"Wraith", '*', 3, 4, false, 0, 0},
         {"Banshee", '*', 4, 6, false, 0, 0},
     };
-    
-    menu(grand);    //   Call the menu function
+
+
+    menu(grand);   //   Call the menu function
     while (grand.spaceShip.heal > 0 && grand.spaceShip.point < grand.endPoint)
     {
         if(grand.enemy.heal == 0)        // A condition for checking the condition of the ship
-        {
             grand.enemy.exist = false;    // If the heal is equal to zero, it will be out of the game
-        }
         if (grand.enemy.exist == false)
         {
             grand.enemy = typesOfEnemys[rand()%4];      //  Random enemy selection by the system to enter the game screen
@@ -155,7 +154,7 @@ int main()
                     if (j >= 0)         // This condition is for the ship to be printed completely on the page and not to be removed from the page
                         grand.map[j][i] = Enemy;         ////  print enemys
         }
-        grandDraw(grand);  
+        grandDraw(grand);
         //   In this section, we want to write about shooting the ship
         for (size_t i = 0; i < grand.bullet.size(); i++)
         {
@@ -176,12 +175,8 @@ int main()
         }
         move(grand);   //   Call the move function
         for (size_t i = grand.enemy.x; i < grand.enemy.x + grand.enemy.size; i++)
-        {
             for (size_t j = grand.enemy.y; j < grand.enemy.y + grand.enemy.size; j++)
-            {
                 grand.map[j][i] = Null;
-            }
-        }
         if (grand.enemy.heal == 0)    // Checking the condition of continuing the game   <heal>
         {
             grand.spaceShip.point += 2 * (grand.enemy.size * grand.enemy.size);
@@ -189,21 +184,12 @@ int main()
             save(grand);
             continue;
         }
-        if(grand.enemy.y + grand.enemy.size < grand.size)  // enemys move 
+        if(grand.enemy.y + grand.enemy.size < grand.size)
         {
             grand.enemy.y++;
-            for (size_t i = grand.enemy.x; i < grand.enemy.x + grand.enemy.size; i++) // Change the position of x
-            {
-                for (size_t j = grand.enemy.y; j < grand.enemy.y + grand.enemy.size; j++)  // Change the position of y
-                {
-                    grand.map[j][i] = Enemy;  // Write
-                }
-            }
-        }
-        else
-        {
-            grand.enemy.exist = false;
-            grand.spaceShip.heal--;
+            for (size_t i = grand.enemy.x; i < grand.enemy.x + grand.enemy.size; i++)
+                for (size_t j = grand.enemy.y; j < grand.enemy.y + grand.enemy.size; j++)
+                    grand.map[j][i] = Enemy;
         }
         save(grand);
     }
@@ -225,8 +211,6 @@ int main()
     {
         std::cerr << e.what() << '\n';
     }
-    
-    
 	system("pause");
     return 0;
 }
@@ -261,26 +245,14 @@ bool load(grandStruct &grand)      // Read the information stored in the file
             for (size_t j = 0; j < mapSize; j++)
                 grand.map[i][j] = Null;
         loadFile.open("SaveFile.bin", ios::binary | ios::in);
-        /*
-        unsigned int size;// size of grand
-        unsigned int endPoint = 0; // game end points
-        enemyStruct enemy;
-        spaceShipStruct spaceShip;
-        condition **map;
-        vector<bullets> bullet;   // bullet 
-        */
         unsigned int sizeOfStruct = sizeof(unsigned int) + sizeof(unsigned int) + sizeof(enemyStruct) 
         + sizeof(spaceShipStruct);
         if(loadFile.read((char *) &grand, sizeOfStruct))
         {
             for (size_t i = 0; i < mapSize; i++)
-            {
                 for (size_t j = 0; j < mapSize; j++)
-                {
                    loadFile.read((char *) &grand.map[j][i], sizeof(condition));
-                }
-            }
-            
+
             bullets bullet;
             while(loadFile.read((char *) &bullet, sizeof(bullets)))
                 grand.bullet.push_back(bullet);
@@ -371,9 +343,9 @@ void menu(grandStruct &grand)
 
 void newGame(grandStruct &grand)
 {
-    try                      // debuging 
+    try
     {
-        remove("SaveFile.bin");     // remove Information 
+        remove("SaveFile.bin");     // remove save file
     }
     catch(const std::exception& e)
     {
@@ -405,6 +377,8 @@ void newGame(grandStruct &grand)
         grand.size--;
         Sleep(10);
     }
+    grand.bullet.clear();
+    delete[] grand.map;
     grand.map = new condition*[grand.size];
     for (size_t i = 0; i < grand.size ; i++)
         grand.map[i] = new condition[grand.size];
