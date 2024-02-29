@@ -31,11 +31,28 @@
 	\newpage
 	\setcounter{section}{0}
 	\part{Introducing the game}\label{introducing}
-        	
+
 	\section{How to Play}\label{introducing.how}
-	  This game which we have typed the code, when we start it, it prints a menu on the page for the user, and by clicking the start of the program, it asks the user to enter a number for the number of rows and columns of the game page, and then the game page is printed, which is a The ship is on the last line of this page
+	The game has a menu, You can choose between the options\\
+	1.Continue game
+If you choose this, You can continue the saved game\\
+	2.New game
+If you choose this, a new game will be start. you have to set ground size then tou have to set your end point
+then you see the game ground.
+	3.Game settings
+If you choose this, you see the option menu. In option menu you can change the spaceships character or enemys character.\\
+	4.Quit game
+If you choose this, you can exit the game.\\
+
+The playing ground is a size*size matrix.The character of the ship is in the lowest row of the matrix and enemies attack from the top of the matrix with the bottom so you have to destroyed enemies with down row in the keyboard or you can move right or left in the ground with right row or left row.you can pause the game and see the menu if you click on the up row key.\\
+
+If you destoried the enemy you receive the enemys point but if the if the enemy reaches the last line, your health will decrease.\\
+
+If your score reaches the limit, a ``You win'' message will be printed but if  your health drops to zero, a ``game over'' message will be printed.
+ 
 	\section{Errors and Warnings}\label{introducing.errors}
-	
+	If you enter an undefined character for move the spaceship, nothing special will happen.\\
+	If the character leaves the playing ground, it enters the playing grand from the other side.\\
 	
 	\newpage
 	\setcounter{section}{0}
@@ -46,18 +63,29 @@
 	\subsection{iostream}
 	This library is a requirement for writing any c++ code.
 	\subsection{stdlib.h}
-	We used this library so that we can use "rand()" and "srand()" functions.
+	We used this library so that we can use ``rand()" and ``srand()" functions.
 	\subsection{ctime}
-	By adding this library, we were able to use the "sleep()" function for interrupts.
+	By adding this library, we were able to use the ``sleep()" function for interrupts.
 	\subsection{fstream}
-	Adding this library is so that we can create a file and use its commands like "fstream" or "ios::binary".
+	Adding this library is so that we can create a file and use its commands like ``fstream" or ``ios::binary".
 	\subsection{vector}
-	We used this library to be able to use vector and its functions in the code, such as "push\_back".
+	We used this library to be able to use vector and its functions in the code, such as ``push\_back".
 	\section{Defines}\label{description.defines}
 	In this code, we have used defines for colors such as blue, green, black, etc., to color and also to bold our output text, whose ascii codes we have obtained by searching the internet, 
 	which of course We also used it in the mini project and we have also put 4 defines for the keys of our game in the code.
+	\section{Enumertions}\label{description.Enums}
+	\subsection{condition}
+	This enum determines what is included in the map.
 	\section{Structures}\label{description.structs}
-	We have used an enum and three structures in this code
+	We have used the following structs in this code.
+	\subsection{enemyStruct}
+	This struct stores data of the enemies such as condition and size.
+	\subsection{spaceShipStruct}
+	This struct stores data of the spaceship such as condition and size.
+	\subsection{bullets}
+	This struct stores data of the bullets in the map such as condition.
+	\subsection{graundStruct}
+	This struct stores all data of the game ground.
 	\section{Functions}\label{description.func}
 	Our code functions are as follows
 	\subsection{main}
@@ -90,13 +118,13 @@
 	\subsection{shoot}
 	In the shoot function, we create a new variable called newbullet using the bullet structure, 
 	and position the ship's beam according to the two variables x and y that we introduced in the structure.
-	 %Finally, we use the push_back function, which is in the vector class.
+	 Finally, we use the push-back function, which is in the vector class.
 	\subsection{save}
 	We have used the fstream library to use this function.
     In this function, we first create a file, of course, the information in this file is stored in binary form because we have used the structure, and to transfer information from the structure to the file, this command must be used (ios::binary).
     Then we have used the flush command, which puts the information in the file part by part
 	\subsection{load}
-    The structure of this function is the same as the save function. This function reads the saved information of the game, of course, this is a binary operation with the same file "saveFile.bin".
+    The structure of this function is the same as the save function. This function reads the saved information of the game, of course, this is a binary operation with the same file ``saveFile.bin".
     When we select continue game option in the menu, since the information was saved in the file in a piece by piece, from where the game left off.
     He starts to continue
     If the user has exited the game, the file is also deleted, so there is no information to display.
