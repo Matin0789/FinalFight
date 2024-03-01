@@ -107,7 +107,6 @@ struct graundStruct   // <This is the structure for our playground, on which all
     vector<bullets> bullet;   // bullet
 };
 
-
 /// function declaration
 // Preliminary function
 bool save(graundStruct ground);     //  <this function for saving game>
@@ -191,10 +190,15 @@ int main()
                 for (size_t j = ground.enemy.y; j < ground.enemy.y + ground.enemy.size; j++)
                     ground.map[j][i] = Enemy;
         }
+        else
+        {
+            ground.spaceShip.heal--;
+            ground.enemy.exist= false;
+        }
         save(ground);
     }
     system("cls");
-    for (size_t i = 0; i < ground.size - 3; i++)    // Print the symbol /\ in the number of three less than the last line of the game screen entered by the user
+    for (size_t i = 0; i < ground.size - 3; i++)  // Print the symbol /\ in the number of three less than the last line of the game screen entered by the user
         cout << Magenta << "/\\" << Reset;
     if (ground.spaceShip.heal == 0)
         cout << BoldRed << "Game Over";  // If the ship's heal becomes zero, print Game Over at the top of the screen.

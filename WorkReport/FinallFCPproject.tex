@@ -35,20 +35,20 @@
 	\section{How to Play}\label{introducing.how}
 	The game has a menu, You can choose between the options\\
 	1.Continue game
-If you choose this, You can continue the saved game\\
+	If you choose this, You can continue the saved game\\
 	2.New game
-If you choose this, a new game will be start. you have to set ground size then tou have to set your end point
-then you see the game ground.
+	If you choose this, a new game will be start. you have to set ground size then tou have to set your end point
+	then you see the game ground.
 	3.Game settings
-If you choose this, you see the option menu. In option menu you can change the spaceships character or enemys character.\\
+	If you choose this, you see the option menu. In option menu you can change the spaceships character or enemys character.\\
 	4.Quit game
-If you choose this, you can exit the game.\\
+	If you choose this, you can exit the game.\\
 
-The playing ground is a size*size matrix.The character of the ship is in the lowest row of the matrix and enemies attack from the top of the matrix with the bottom so you have to destroyed enemies with down row in the keyboard or you can move right or left in the ground with right row or left row.you can pause the game and see the menu if you click on the up row key.\\
+	The playing ground is a size*size matrix.The character of the ship is in the lowest row of the matrix and enemies attack from the top of the matrix with the bottom so you have to destroyed enemies with down row in the keyboard or you can move right or left in the ground with right row or left row.you can pause the game and see the menu if you click on the up row key.\\
 
-If you destoried the enemy you receive the enemys point but if the if the enemy reaches the last line, your health will decrease.\\
+	If you destoried the enemy you receive the enemys point but if the if the enemy reaches the last line, your health will decrease.\\
 
-If your score reaches the limit, a ``You win'' message will be printed but if  your health drops to zero, a ``game over'' message will be printed.
+	If your score reaches the limit, a ``You win'' message will be printed but if  your health drops to zero, a ``game over'' message will be printed.
  
 	\section{Errors and Warnings}\label{introducing.errors}
 	If you enter an undefined character for move the spaceship, nothing special will happen.\\
@@ -96,13 +96,13 @@ If your score reaches the limit, a ``You win'' message will be printed but if  y
 	\subsection{grandDraw}
 	This function has the task of printing the game page, if we select newGame in the menu, it first takes a number from the user and prints the number of rows and columns equal to that number.
     At the top of the game page, we have the name of the game, Final Fight, and the heal ship, in this function, we call the horizontalLineDraw function to print the lines.\\ \\
-	\includegraphics[scale = 1]{Graphics/menu.png}
+	\includegraphics[scale = 1]{Graphics/map.png}
 	\subsection{horizontalLineDraw}
 	This function has the task of printing the horizontal lines of the game map by using two for loops
 	\subsection{menu}
 	Our menu function, what it displays, consists of four sections, which we first use a do while loop to display once, and then according to the definitions at the top of the code using the ascii code, the up and down buttons and left
 	and we have defined correctly, we can choose the options, by selecting any of the options, we will enter the switch and case section of this function, each of which applies commands.\\ \\
-	\includegraphics[scale = 1]{Graphics/map.png}
+	\includegraphics[scale = 1]{Graphics/menu.png}
 	\subsection{newGame}
 	If the user selects the second option i.e. newgame in the game menu, 
 	this function will be called and at first it will ask the user for the number of rows and columns of the game screen and after waiting for the user to enter the target point after entering these two numbers of the game screen will be printed.
