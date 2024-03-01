@@ -55,8 +55,8 @@ The relevant teacher :
 // arrow ascii codes
 #define UP 72
 #define DOWN 80
-#define LEFT 75
-#define RIGHT 77
+#define LEFT 75  
+#define RIGHT 77 
 
 /// class name space
 using namespace std;
@@ -157,12 +157,12 @@ int main()
         //   In this section, we want to write about shooting the ship
         for (size_t i = 0; i < ground.bullet.size(); i++)
         {
-            if (ground.bullet[i].y == 0)
+            if (ground.bullet[i].y == 0)   //Checking the condition of leaving the page 
             {
-                ground.map[ground.bullet[i].y][ground.bullet[i].x] = Null;
+                ground.map[ground.bullet[i].y][ground.bullet[i].x] = Null;   //If your position was empty...
                 ground.bullet.erase(ground.bullet.begin() + i);
             }
-            if (ground.map[ground.bullet[i].y - 1][ground.bullet[i].x] == Enemy)
+            if (ground.map[ground.bullet[i].y - 1][ground.bullet[i].x] == Enemy)  //Checking the condition of the existence of the enemy
             {
                 ground.map[ground.bullet[i].y][ground.bullet[i].x] = Null;
                 ground.bullet.erase(ground.bullet.begin() + i);
@@ -180,15 +180,15 @@ int main()
         {
             ground.spaceShip.point += 2 * (ground.enemy.size * ground.enemy.size);
             ground.enemy.exist = false;
-            save(ground);
+            save(ground);       //Save data after completing the game
             continue;
         }
-        if(ground.enemy.y + ground.enemy.size < ground.size)
+        if(ground.enemy.y + ground.enemy.size < ground.size)   //Checking the condition of the enemy being printed on the page
         {
             ground.enemy.y++;
-            for (size_t i = ground.enemy.x; i < ground.enemy.x + ground.enemy.size; i++)
-                for (size_t j = ground.enemy.y; j < ground.enemy.y + ground.enemy.size; j++)
-                    ground.map[j][i] = Enemy;
+            for (size_t i = ground.enemy.x; i < ground.enemy.x + ground.enemy.size; i++) 
+                for (size_t j = ground.enemy.y; j < ground.enemy.y + ground.enemy.size; j++) 
+                    ground.map[j][i] = Enemy;                  // print enemy
         }
         else
         {
@@ -209,11 +209,11 @@ int main()
     cout << endl;
     try
     {
-        remove("SaveFile.bin");
+        remove("SaveFile.bin");   
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << e.what() << '\n';  // print bug or error
     }
 	system("pause");
     return 0;
@@ -244,20 +244,20 @@ bool load(graundStruct &ground)      // Read the information stored in the file
         loadFile.close();  
         ground.map = new condition*[mapSize];   // From here on, according to the commands we give to the system, it will print the game page with the last saved conditions.
         for (size_t i = 0; i < mapSize ; i++)
-            ground.map[i] = new condition[mapSize];
+            ground.map[i] = new condition[mapSize];  // new
         for (size_t i = 0; i < mapSize; i++)
             for (size_t j = 0; j < mapSize; j++)
                 ground.map[i][j] = Null;
-        loadFile.open("SaveFile.bin", ios::binary | ios::in);
-        unsigned int sizeOfStruct = sizeof(unsigned int) + sizeof(unsigned int) + sizeof(enemyStruct) 
+        loadFile.open("SaveFile.bin", ios::binary | ios::in);         // binary file
+        unsigned int sizeOfStruct = sizeof(unsigned int) + sizeof(unsigned int) + sizeof(enemyStruct)  //Here, all information related to the game is saved or displayed in a binary file
         + sizeof(spaceShipStruct);
         if(loadFile.read((char *) &ground, sizeOfStruct))
         {
-            for (size_t i = 0; i < mapSize; i++)
+            for (size_t i = 0; i < mapSize; i++) 
                 for (size_t j = 0; j < mapSize; j++)
-                   loadFile.read((char *) &ground.map[j][i], sizeof(condition));
+                   loadFile.read((char *) &ground.map[j][i], sizeof(condition)); //read information
 
-            bullets bullet;
+            bullets bullet;               // struct
             while(loadFile.read((char *) &bullet, sizeof(bullets)))
                 ground.bullet.push_back(bullet);
         	return true;
@@ -266,7 +266,7 @@ bool load(graundStruct &ground)      // Read the information stored in the file
             return false;
     }
     else
-        newGame(ground);
+        newGame(ground);   // This function is called if you have just entered the game
     return false;
 }
 
@@ -342,18 +342,18 @@ void menu(graundStruct &ground)
             break;
         }
         
-    } while (true);
+    } while (true);   // if true go up
 }
 
 void newGame(graundStruct &ground)
 {
     try
     {
-        remove("SaveFile.bin");     // remove save file
+        remove("SaveFile.bin");     // delete save file
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << e.what() << '\n';  // print bug or error
     }
     bool flag = false;
     ground.enemy.exist = false;
@@ -381,15 +381,15 @@ void newGame(graundStruct &ground)
         ground.size--;
         Sleep(10);
     }
-    ground.bullet.clear();
-    delete[] ground.map;
+    ground.bullet.clear();       //This line is for clearing the spent arrows
+    delete[] ground.map; 
     ground.map = new condition*[ground.size];
     for (size_t i = 0; i < ground.size ; i++)
-        ground.map[i] = new condition[ground.size];
+        ground.map[i] = new condition[ground.size]; //for new map
     for (size_t i = 0; i < ground.size; i++)
         for (size_t j = 0; j < ground.size; j++)
-            ground.map[i][j] = Null;
-    ground.spaceShip.x = ((ground.size - 1)/2);
+            ground.map[i][j] = Null;   // print new map
+    ground.spaceShip.x = ((ground.size - 1)/2);           // this line is for print spaceship
     ground.map[ground.size - 1][ground.spaceShip.x] = SpaceShip;
 }
 
